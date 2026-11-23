@@ -59,11 +59,31 @@
   .friends { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; text-align: center; padding: 8px; }
   .friends img { width: 80px; height: 80px; object-fit: cover; background: #fff; display: block; margin: 2px auto 0; }
 
-  /* horse stickers overlaid on the page, where the stars would be */
-  .overlay-sticker {
-    position: absolute; width: 56px; height: auto; pointer-events: none;
-    opacity: .55; mix-blend-mode: multiply; z-index: 5;
+  /* retro web-button banners overlaid on the page */
+  .ob {
+    position: absolute; z-index: 5; pointer-events: none; opacity: .88;
+    white-space: nowrap; line-height: 1.15; text-align: center;
+    padding: 6px 12px; font-family: "Times New Roman", Georgia, serif; font-size: 16px;
+    background: #fff;
   }
+  .ob.red    { background: #e0141e; color: #fff; font: bold 13px Arial, sans-serif; border-radius: 3px; }
+  .ob.red b  { text-decoration: underline; }
+  .ob.yellow { background: #ffef3a; color: #000; font-size: 17px; white-space: normal; width: 190px; }
+  .ob.rainbow { background: linear-gradient(135deg,#ff3b8d,#ffa53b,#fff23b,#3bff8a,#3bb4ff,#a23bff); color: #fff;
+                font: italic bold 20px Arial, sans-serif; text-shadow: 2px 2px 3px #000, 0 0 6px #00f; }
+  .ob.blue   { border: 3px solid #1a1ad6; color: #1a1ad6; text-decoration: underline; font-size: 19px; }
+  .ob.pinkdash { border: 2px dashed #f48fd4; color: #f06ac0; font: 15px Arial, sans-serif; }
+  .ob.glow   { color: #000; font: 18px Arial, sans-serif; text-shadow: 3px 3px 5px #3b3bff; }
+  .ob.pinkfill { background: repeating-linear-gradient(45deg,#ff9fd8 0 4px,#ffc2e8 4px 8px); color: #7a1850;
+                 font: italic 19px Georgia, serif; text-shadow: 1px 1px 0 #fff; }
+  .ob.dotted { border: 3px dotted #1a1ad6; color: #1a1ad6; font: 15px Arial, sans-serif; }
+  .ob.cyan   { background: #3fe8f0; color: #6a0d8c; font: italic 19px Georgia, serif; }
+  .ob.purple { border: 3px solid #7a1fb0; color: #000; font: bold 15px Georgia, serif; }
+  .ob.big    { border: 4px solid #1a1ad6; color: #1a1ad6; font: bold 24px Arial, sans-serif; }
+  .ob.script { border: 2px dashed #000; color: #000; font: italic 15px Georgia, serif; }
+  .ob.pastel { background: repeating-linear-gradient(45deg,#c9efff 0 6px,#ffd6ef 6px 12px); color: #fff;
+               font: bold 19px Arial, sans-serif; text-shadow: 1px 1px 2px #8a6ad0; }
+  .ob.blackred { background: #0a0a96; color: #f00; font: bold 14px Arial, sans-serif; border: 2px solid #f00; }
 
   @media (max-width: 720px) { .cols { grid-template-columns: 1fr; } }
 </style>
@@ -147,24 +167,49 @@
 </div>
 
 <script>
-// scatter the horse sticker over the whole page (stable positions, no jumping on reload)
+// scatter horse-themed web-button banners over the whole page (stable positions, no jumping on reload)
 (function () {
+  const BANNERS = [
+    ['red',      'give <b>ANYTHING</b> just to ride you 🐴'],
+    ['yellow',   'CLICK to be saddled!<br>CLICK to be ridden!<br>CLICK to be groomed!<br>CLICK to be loved!'],
+    ['rainbow',  'CLICK to be galloped! 🐎'],
+    ['blue',     'Please be horse-blogging 🐴'],
+    ['pinkdash', 'hay is for horses 🌾'],
+    ['glow',     "I'm always at the stable"],
+    ['pinkfill', 'loving horses makes me surreal'],
+    ['dotted',   '🐴 stable dream 🐴'],
+    ['cyan',     "I'm your favorite pony 🐎"],
+    ['purple',   'cybernetic horse girl'],
+    ['big',      'I LOVE MY HORSES'],
+    ['script',   'do you want to pet a horse?'],
+    ['pastel',   'forget to hay index'],
+    ['blackred', 'CLICK to be bridled!'],
+    ['blue',     '100% genuine horse girl 🐴'],
+    ['pinkdash', 'neigh-borhood algorithm'],
+    ['glow',     'trot trot trot 🐎'],
+    ['pinkfill', 'ambient horse 🐴'],
+    ['dotted',   'do you believe in horses?'],
+    ['cyan',     'mane character 🐎'],
+    ['red',      'CLICK FOR STABLE'],
+    ['script',   'you can lead a horse to www'],
+    ['purple',   'internet pony 🐴'],
+    ['big',      'HORSE GIRL FOREVER']
+  ];
   let s = 7; const r = () => (s = (s * 16807) % 2147483647) / 2147483647;
   const doc = document.documentElement;
   function place() {
-    document.querySelectorAll('.overlay-sticker').forEach(e => e.remove());
+    document.querySelectorAll('.ob').forEach(e => e.remove());
     const w = doc.scrollWidth, h = Math.max(doc.scrollHeight, innerHeight);
-    const n = Math.round((w * h) / 45000);
+    const n = Math.min(BANNERS.length, Math.max(8, Math.round((w * h) / 70000)));
     s = 7;
     for (let i = 0; i < n; i++) {
-      const img = new Image();
-      img.src = 'assets/horse-sticker.png'; img.alt = ''; img.className = 'overlay-sticker';
-      const size = 40 + r() * 40;
-      img.style.width = size + 'px';
-      img.style.left = (r() * (w - size)) + 'px';
-      img.style.top = (r() * (h - size)) + 'px';
-      img.style.transform = 'rotate(' + (r() * 60 - 30).toFixed(0) + 'deg)';
-      document.body.appendChild(img);
+      const [cls, html] = BANNERS[i];
+      const el = document.createElement('div');
+      el.className = 'ob ' + cls; el.innerHTML = html;
+      document.body.appendChild(el);
+      el.style.left = Math.max(0, r() * (w - el.offsetWidth)) + 'px';
+      el.style.top = Math.max(0, r() * (h - el.offsetHeight)) + 'px';
+      el.style.transform = 'rotate(' + (r() * 16 - 8).toFixed(1) + 'deg)';
     }
   }
   addEventListener('load', place);
