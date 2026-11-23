@@ -441,5 +441,58 @@ if (document.documentElement.classList.contains('andrew'))
   let t; addEventListener('resize', () => { clearTimeout(t); t = setTimeout(build, 250); });
 })();
 </script>
+<script>
+// "stickers" links: PowerPoint-style cube transition (5s). The current page becomes the front face of a cube,
+// the stickers page loads into an iframe on the right face, the cube turns 90deg, then we really navigate.
+(function () {
+  var TARGET = 'stickers.html', DURATION = 5000, busy = false;
+
+  function go() {
+    if (busy) return; busy = true;
+    var W = innerWidth, H = innerHeight;
+
+    var stage = document.createElement('div');
+    stage.style.cssText = 'position:fixed;inset:0;z-index:99999;overflow:hidden;background:#000;perspective:' + Math.round(W * 1.6) + 'px;';
+    var cube = document.createElement('div');
+    cube.style.cssText = 'position:absolute;inset:0;transform-style:preserve-3d;transform:translateZ(' + (-W / 2) + 'px) rotateY(0deg);';
+
+    // front face = the live page (its fixed-position layers stay inside because the face has a transform)
+    var front = document.createElement('div');
+    front.style.cssText = 'position:absolute;inset:0;overflow:hidden;backface-visibility:hidden;transform:rotateY(0deg) translateZ(' + (W / 2) + 'px);';
+    // right face = the stickers page
+    var right = document.createElement('iframe');
+    right.src = TARGET; right.setAttribute('aria-hidden', 'true'); right.tabIndex = -1;
+    right.style.cssText = 'position:absolute;left:0;top:0;width:' + W + 'px;height:' + H + 'px;border:0;background:#fff;backface-visibility:hidden;transform:rotateY(90deg) translateZ(' + (W / 2) + 'px);';
+
+    var kids = Array.prototype.slice.call(document.body.childNodes);
+    kids.forEach(function (k) { front.appendChild(k); });
+    cube.appendChild(front); cube.appendChild(right); stage.appendChild(cube);
+    document.body.appendChild(stage);
+    document.documentElement.style.overflow = 'hidden';
+
+    var started = false;
+    function start() {
+      if (started) return; started = true;
+      cube.style.transition = 'transform ' + DURATION + 'ms ease-in-out';
+      requestAnimationFrame(function () { requestAnimationFrame(function () {
+        cube.style.transform = 'translateZ(' + (-W / 2) + 'px) rotateY(-90deg)';
+      }); });
+      setTimeout(function () { location.href = TARGET; }, DURATION + 60);
+    }
+    right.addEventListener('load', start);
+    setTimeout(start, 1500); // don't wait forever if the iframe is slow
+  }
+
+  document.addEventListener('click', function (e) {
+    if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+    var a = e.target.closest && e.target.closest('a[href]');
+    if (!a || a.getAttribute('href') !== TARGET) return;
+    e.preventDefault(); go();
+  });
+
+  // coming back with the browser's back button: don't show the frozen cube
+  addEventListener('pageshow', function (e) { if (e.persisted) location.reload(); });
+})();
+</script>
 </body>
 </html>
