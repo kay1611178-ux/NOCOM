@@ -111,8 +111,8 @@
   .fx .blk { position: absolute; overflow: hidden; }
   .fx .blk.tint  { backdrop-filter: blur(3px) saturate(.7) brightness(1.15); }
   .fx .blk.slice { background-image: url("assets/last-straw.jpg"); filter: hue-rotate(60deg) saturate(.6) contrast(1.15) brightness(1.2); }
-  .fx .word { position: absolute; white-space: nowrap; line-height: 1; font-family: Arial, Helvetica, sans-serif;
-              color: rgba(255,255,255,.5); mix-blend-mode: screen; }
+  .fx .word { position: absolute; white-space: pre; line-height: .95; font-family: Arial, Helvetica, sans-serif;
+              color: rgba(255,255,255,.5); mix-blend-mode: screen; filter: blur(1.5px); }
   .fx .word.outline { color: transparent; -webkit-text-stroke: 2px rgba(255,255,255,.8); }
   .fx .word.soft { filter: blur(3px); color: rgba(210,235,255,.5); }
   .fx .word.dark { color: rgba(8,14,40,.38); mix-blend-mode: multiply; }
@@ -291,7 +291,7 @@
 <div class="fx right" aria-hidden="true"></div>
 <script>
 // glitch effect over the two horse-photo margins: shifted photo slices, blurred blocks,
-// big translucent letters spelling h-o-r-s-e, grain and scratches
+// translucent blurry "horse" lettering (sometimes split over lines), grain and scratches
 (function () {
   const rnd = (a, b) => a + Math.random() * (b - a);
   const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -327,14 +327,21 @@
           backgroundSize: W + 'px ' + H + 'px', backgroundPosition: (-x + dx) + 'px ' + (-y + dy) + 'px' });
       });
 
-      // big translucent single letters (h, o, r, s, e), overlapping and clipped at the edges
-      add('word', 10, el => {
-        const r = Math.random();
-        el.textContent = 'horse'[Math.floor(rnd(0, 5))];
+      // translucent, slightly blurry "horse" that sometimes breaks across lines (hor / se ...)
+      const SPLITS = ['hor
+se', 'ho
+rse', 'h
+orse', 'hors
+e', 'ho
+rs
+e'];
+      add('word', 7, el => {
+        const r = Math.random(), split = Math.random() < .35;
+        el.textContent = split ? SPLITS[Math.floor(rnd(0, SPLITS.length))] : 'horse';
         el.className = 'word' + (r < .22 ? ' outline' : r < .42 ? ' soft' : r < .66 ? ' dark' : r < .82 ? ' blue' : '');
-        const fs = rnd(70, Math.max(90, Math.min(W * .95, 280)));
+        const fs = rnd(40, Math.max(56, Math.min(W * .55, 150))) * (split ? 1.35 : 1);
         el.style.fontSize = fs + 'px';
-        el.style.left = rnd(-.25 * W, .6 * W) + 'px'; el.style.top = rnd(-.1 * H, H - fs * .6) + 'px';
+        el.style.left = rnd(-.15 * W, .5 * W) + 'px'; el.style.top = rnd(-.05 * H, H - fs) + 'px';
       });
 
       for (let i = 0; i < 5; i++) { const h = document.createElement('div'); h.className = 'scratch h'; h.style.top = rnd(2, H) + 'px'; box.appendChild(h); }
