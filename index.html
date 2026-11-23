@@ -113,8 +113,10 @@
   .fx .blk.slice { background-image: url("assets/last-straw.jpg"); filter: hue-rotate(60deg) saturate(.6) contrast(1.15) brightness(1.2); }
   .fx .word { position: absolute; white-space: nowrap; line-height: 1; font-family: Arial, Helvetica, sans-serif;
               color: rgba(255,255,255,.5); mix-blend-mode: screen; }
-  .fx .word.outline { color: transparent; -webkit-text-stroke: 1.5px rgba(255,255,255,.75); }
-  .fx .word.soft { filter: blur(2px); color: rgba(210,235,255,.55); }
+  .fx .word.outline { color: transparent; -webkit-text-stroke: 2px rgba(255,255,255,.8); }
+  .fx .word.soft { filter: blur(3px); color: rgba(210,235,255,.5); }
+  .fx .word.dark { color: rgba(8,14,40,.38); mix-blend-mode: multiply; }
+  .fx .word.blue { color: rgba(30,70,210,.32); mix-blend-mode: multiply; }
   .fx .scratch { position: absolute; background: rgba(255,255,255,.5); }
   .fx .scratch.h { height: 1px; left: 0; right: 0; }
   .fx .scratch.v { width: 1px; top: 0; bottom: 0; background: rgba(255,255,255,.35); }
@@ -206,32 +208,32 @@
 <script>
 // horse stickers scattered over the page, with horse-themed web-button banners drifting on top
 (function () {
-  // [style, message]: placeholder text for now, edit each message (HTML allowed) as you like
+  // [style, message]: the original wording from the banner reference; edit any message (HTML allowed)
   const BANNERS = [
-    ['red',      'do you believe in horses?'],
-    ['yellow',   'do you believe in horses?'],
-    ['rainbow',  'do you believe in horses?'],
-    ['blue',     'do you believe in horses?'],
-    ['pinkdash', 'do you believe in horses?'],
-    ['glow',     'do you believe in horses?'],
-    ['pinkfill', 'do you believe in horses?'],
-    ['dotted',   'do you believe in horses?'],
-    ['cyan',     'do you believe in horses?'],
-    ['purple',   'do you believe in horses?'],
-    ['big',      'do you believe in horses?'],
-    ['script',   'do you believe in horses?'],
-    ['pastel',   'do you believe in horses?'],
-    ['blackred', 'do you believe in horses?'],
-    ['blue',     'do you believe in horses?'],
-    ['pinkdash', 'do you believe in horses?'],
-    ['glow',     'do you believe in horses?'],
-    ['pinkfill', 'do you believe in horses?'],
-    ['dotted',   'do you believe in horses?'],
-    ['cyan',     'do you believe in horses?'],
-    ['red',      'do you believe in horses?'],
-    ['script',   'do you believe in horses?'],
-    ['purple',   'do you believe in horses?'],
-    ['big',      'do you believe in horses?']
+    ['red',      'give <b>ANYTHING</b> just to love you'],
+    ['yellow',   'CLICK to be touched!<br>CLICK to be downloaded!<br>CLICK to be saved!<br>CLICK to be loved!'],
+    ['rainbow',  'CLICK to be downloaded!<br>CLICK to be blocked!'],
+    ['blue',     'Please be girlblogging'],
+    ['pinkdash', 'hug me dream me document me'],
+    ['glow',     "I'm always texting"],
+    ['pinkfill', 'loving makes me surreal'],
+    ['dotted',   'internet dream'],
+    ['cyan',     "I'm your algorithm"],
+    ['purple',   'cybernetic baby'],
+    ['big',      'I LOVE MY HYPERTEXT'],
+    ['script',   'do you want to hug?'],
+    ['pastel',   'forget to index'],
+    ['blackred', 'CLICK to be darling!'],
+    ['blue',     '100% genuine'],
+    ['pinkdash', 'this user creates'],
+    ['glow',     'I love my poetic computer'],
+    ['pinkfill', 'my ambient girl'],
+    ['dotted',   'do you believe in uploading?'],
+    ['cyan',     'Computer savior'],
+    ['red',      'CLICK <b>FOR</b> CONNECTION!'],
+    ['script',   'program soldier'],
+    ['purple',   'post-database destiny'],
+    ['big',      'i love my hyperlink']
   ];
   const doc = document.documentElement;
   const rnd = (a, b) => a + Math.random() * (b - a);
@@ -289,7 +291,7 @@
 <div class="fx right" aria-hidden="true"></div>
 <script>
 // glitch effect over the two horse-photo margins: shifted photo slices, blurred blocks,
-// translucent "horse" lettering, grain and scratches
+// big translucent letters spelling h-o-r-s-e, grain and scratches
 (function () {
   const rnd = (a, b) => a + Math.random() * (b - a);
   const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -325,12 +327,14 @@
           backgroundSize: W + 'px ' + H + 'px', backgroundPosition: (-x + dx) + 'px ' + (-y + dy) + 'px' });
       });
 
-      add('word', 7, el => {
-        el.textContent = 'horse';
-        const fs = rnd(22, Math.max(30, Math.min(W * .5, 100)));
-        el.className = 'word' + (Math.random() < .35 ? ' outline' : Math.random() < .4 ? ' soft' : '');
+      // big translucent single letters (h, o, r, s, e), overlapping and clipped at the edges
+      add('word', 10, el => {
+        const r = Math.random();
+        el.textContent = 'horse'[Math.floor(rnd(0, 5))];
+        el.className = 'word' + (r < .22 ? ' outline' : r < .42 ? ' soft' : r < .66 ? ' dark' : r < .82 ? ' blue' : '');
+        const fs = rnd(70, Math.max(90, Math.min(W * .95, 280)));
         el.style.fontSize = fs + 'px';
-        el.style.left = rnd(-.2 * W, .6 * W) + 'px'; el.style.top = rnd(0, H - fs) + 'px';
+        el.style.left = rnd(-.25 * W, .6 * W) + 'px'; el.style.top = rnd(-.1 * H, H - fs * .6) + 'px';
       });
 
       for (let i = 0; i < 5; i++) { const h = document.createElement('div'); h.className = 'scratch h'; h.style.top = rnd(2, H) + 'px'; box.appendChild(h); }
