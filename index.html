@@ -9,6 +9,7 @@
   :root {
     --teal: #d2386b;
     --ink: #1b2340;
+    --m: clamp(12px, 2vw, 36px);
     --metal: #7b7b80;
     --metal-d: #3a3a40;
     --blue: #1d3a8c;
@@ -21,23 +22,17 @@
   a:hover { text-decoration: underline; }
 
   /* main section: translucent steel-blue console over the background image */
-  #wrap { position: relative; z-index: 2; width: 740px; max-width: 100%; margin: 0 auto; min-height: 100vh; }
-  #wrap .mid { position: fixed; top: 0; left: 50%; transform: translateX(-50%); width: min(740px, 100vw); height: 100vh; object-fit: fill; z-index: 0; pointer-events: none; }
+  /* the photo sits behind everything; the console covers all but a narrow ring around the edges */
+  .mid { position: fixed; inset: 0; width: 100%; height: 100%; object-fit: fill; z-index: 0; pointer-events: none; }
+  body { padding: var(--m); }   /* equal gap on all four sides, top and bottom included */
+  #wrap { position: relative; z-index: 2; width: 100%; margin: 0; min-height: calc(100vh - 2 * var(--m)); }
   #page {
-    width: 100%; margin: 0; padding: 12px 14px 20px; min-height: 100vh; position: relative; z-index: 1;
+    width: 100%; margin: 0; padding: 12px 14px 20px; min-height: calc(100vh - 2 * var(--m)); position: relative; z-index: 1;
     background:
       repeating-linear-gradient(0deg, rgba(255,255,255,.14) 0 1px, transparent 1px 3px),
       linear-gradient(160deg, rgba(224,231,245,.88), rgba(132,148,184,.86));
+    box-shadow: 0 0 0 1px rgba(20,20,30,.55), 0 0 40px rgba(0,0,20,.35);
   }
-
-  /* photo filling the left and right margins beside the main content */
-  .side {
-    position: fixed; top: 0; bottom: 0; z-index: 0;
-    width: max(0px, calc(50vw - 370px)); height: 100vh;
-    object-fit: fill; pointer-events: none;
-  }
-  .side.left { left: 0; }
-  .side.right { right: 0; }
 
   /* ---- y2k console chrome ---- */
   .chrome { height: 14px; position: relative; margin-bottom: 8px; border: 1px solid #222;
@@ -58,8 +53,9 @@
   .strip .here { margin-left: auto; color: #3a3a50; }
   .strip span.dot { opacity: .6; }
 
-  .cols { display: grid; grid-template-columns: 150px 1fr; gap: 14px; align-items: start; }
-  .main { display: grid; gap: 14px; }
+  .cols { display: grid; grid-template-columns: 170px 1fr; gap: 14px; align-items: start; }
+  .main { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; align-items: start; }
+  .main .vision { grid-column: 1 / -1; }
 
   .win { position: relative; border: 1px solid #25252b; box-shadow: inset 0 0 0 1px rgba(255,255,255,.55), 3px 3px 0 rgba(0,0,0,.18);
          background: rgba(96,112,150,.55); color: #f4f7ff; text-shadow: 0 0 2px rgba(0,0,0,.35);
@@ -79,9 +75,9 @@
   .menu a { display: block; padding: 1px 0; }
   .menu a:hover { background: #14141a; color: #f0f3ff; text-decoration: none; }
 
-  .vision .wb { display: grid; grid-template-columns: 150px 1px 1fr; gap: 16px; align-items: start; }
+  .vision .wb { display: grid; grid-template-columns: 200px 1px 1fr; gap: 16px; align-items: start; }
   .shot { position: relative; border: 1px solid #25252b; background: #fff; }
-  .shot img { display: block; width: 100%; height: 190px; object-fit: cover; object-position: 30% 42%; filter: saturate(.9) contrast(1.05); }
+  .shot img { display: block; width: 100%; height: 230px; object-fit: cover; object-position: 30% 42%; filter: saturate(.9) contrast(1.05); }
   .shot::after { content: ''; position: absolute; inset: 0; pointer-events: none; background: repeating-linear-gradient(0deg, rgba(0,0,0,.14) 0 1px, transparent 1px 3px); }
   .divider { width: 1px; align-self: stretch; background: rgba(255,255,255,.5); }
   .headline { text-align: right; font: 17px/1.1 "Trebuchet MS", Verdana, sans-serif; letter-spacing: .04em; text-transform: none; color: #fff; margin: 0 0 10px; }
@@ -102,6 +98,7 @@
   .links a::before { content: '>> '; opacity: .7; }
   .hot { color: #ffd0de; font-weight: bold; }
 
+  @media (max-width: 1100px) { .main { grid-template-columns: 1fr; } }
   @media (max-width: 720px) {
     .cols { grid-template-columns: 1fr; }
     .vision .wb { grid-template-columns: 1fr; }
@@ -153,9 +150,7 @@
   @keyframes hue { to { filter: hue-rotate(360deg); } }
 
   /* glitch / photocopy effect, confined to the horse photo margins */
-  .fx { position: fixed; top: 0; bottom: 0; z-index: 5; pointer-events: none; overflow: hidden;
-        width: max(0px, calc(50vw - 370px)); }
-  .fx.left { left: 0; } .fx.right { right: 0; }
+  .fx { position: fixed; inset: 0; z-index: 1; pointer-events: none; overflow: hidden; }
   .fx .bn { position: absolute; inset: 0; z-index: 3; }
   .fx .bn .ob { opacity: .8; }
   .fx .wash { position: absolute; inset: 0; mix-blend-mode: screen;
@@ -166,7 +161,7 @@
   .fx .blk, .fx .word { opacity: 0; transition: opacity .7s ease-in-out; }
   .fx .blk.tint  { backdrop-filter: blur(3px) saturate(.7) brightness(1.15); }
   /* rare smog pull: one continuous photo across left margin, main section and right margin */
-  html.rare .side, html.rare .mid { display: none; }
+  html.rare .mid { display: none; }
   #rare { position: fixed; inset: 0; width: 100vw; height: 100vh; object-fit: fill; z-index: 0; pointer-events: none; }
   .fx .blk.slice { background-image: url("assets/jellyfish.jpg"); filter: hue-rotate(60deg) saturate(.6) contrast(1.15) brightness(1.2); }
   html.rare .fx .blk.slice { background-image: var(--rare-url); }
@@ -203,11 +198,9 @@
   document.body.insertBefore(i, document.body.firstChild);
 })();
 </script>
-<img class="side left" src="assets/jellyfish.jpg" alt="">
-<img class="side right" src="assets/jellyfish.jpg" alt="">
+<img class="mid" src="assets/jellyfish.jpg" alt="">
 
 <div id="wrap">
-<img class="mid" src="assets/jellyfish.jpg" alt="">
 <script>
 // "andrew" rare pull: swap the three section images to the last-straw photo before anything is painted
 if (document.documentElement.classList.contains('andrew'))
@@ -302,8 +295,7 @@ if (document.documentElement.classList.contains('andrew'))
 </div>
 </div>
 
-<div class="fx left" aria-hidden="true"></div>
-<div class="fx right" aria-hidden="true"></div>
+<div class="fx" aria-hidden="true"></div>
 <script>
 // banners + glitch effect over the two horse-photo margins: banners laid out over the photo, then shifted photo slices, blurred blocks,
 // translucent blurry "NOCOM" lettering (sometimes split over lines), grain and scratches
@@ -386,19 +378,30 @@ if (document.documentElement.classList.contains('andrew'))
       if (W < 24) return;
       // banners are switched off for now; uncomment the next line to bring them back
       // layout(box.firstChild, W, H, side * 11);
+      // positions that overlap the narrow ring around the console (left, right, top or bottom strip)
+      const wr = document.getElementById('wrap').getBoundingClientRect();
+      const M = Math.max(10, (innerWidth - wr.width) / 2);
+      const ring = (w, h) => {
+        const side = Math.floor(rnd(0, 4));
+        if (side === 0) return [rnd(-w + .4 * M, .6 * M), rnd(-.05 * H, H - h * .5)];
+        if (side === 1) return [rnd(W - 1.2 * M, W - .4 * M), rnd(-.05 * H, H - h * .5)];
+        if (side === 2) return [rnd(-.15 * W, .9 * W), rnd(-h + .4 * M, .6 * M)];
+        return [rnd(-.15 * W, .9 * W), rnd(H - 1.2 * M, H - .4 * M)];
+      };
       const add = (cls, n, move) => { for (let i = 0; i < n; i++) {
         const el = document.createElement('div'); el.className = cls; box.appendChild(el);
         loop(el, () => move(el), g, rnd(0, 1500));
       } };
 
       add('blk tint', 9, el => {
-        el.style.left = rnd(-.1 * W, .8 * W) + 'px'; el.style.top = rnd(0, H) + 'px';
-        el.style.width = rnd(.2 * W, W) + 'px'; el.style.height = rnd(10, .16 * H) + 'px';
+        const w = rnd(.15 * W, .6 * W), h = rnd(10, .1 * H), pos = ring(w, h);
+        el.style.left = pos[0] + 'px'; el.style.top = pos[1] + 'px';
+        el.style.width = w + 'px'; el.style.height = h + 'px';
         el.style.background = TINTS[Math.floor(rnd(0, TINTS.length))];
       });
 
       add('blk slice', 8, el => {
-        const w = rnd(.3 * W, W * 1.1), h = rnd(12, .14 * H), x = rnd(-.1 * W, .7 * W), y = rnd(0, H - h);
+        const w = rnd(.2 * W, .7 * W), h = rnd(12, .12 * H), pos = ring(w, h), x = pos[0], y = pos[1];
         const dx = rnd(-.45 * W, .45 * W), dy = rnd(-20, 20);
         // in rare mode the photo spans the whole viewport, so slices must sample from the matching spot
         const rare = document.documentElement.classList.contains('rare');
@@ -413,9 +416,9 @@ if (document.documentElement.classList.contains('andrew'))
         const r = Math.random(), split = Math.random() < .35;
         el.textContent = split ? SPLITS[Math.floor(rnd(0, SPLITS.length))] : 'NOCOM';
         el.className = 'word' + (r < .22 ? ' outline' : r < .42 ? ' soft' : r < .66 ? ' dark' : r < .82 ? ' blue' : '');
-        const fs = rnd(40, Math.max(56, Math.min(W * .45, 130))) * (split ? 1.35 : 1);
+        const fs = rnd(46, 150) * (split ? 1.3 : 1), pos = ring(fs * 3.2, fs * (split ? 2 : 1));
         el.style.fontSize = fs + 'px';
-        el.style.left = rnd(-.15 * W, .5 * W) + 'px'; el.style.top = rnd(-.05 * H, H - fs) + 'px';
+        el.style.left = pos[0] + 'px'; el.style.top = pos[1] + 'px';
       });
 
       for (let i = 0; i < 5; i++) { const h = document.createElement('div'); h.className = 'scratch h'; h.style.top = rnd(2, H) + 'px'; box.appendChild(h); }
