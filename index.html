@@ -265,8 +265,8 @@
     ['big',       'i love my hyperlink ' + d('🐬')]
   ];
 
-  // lower part of the photo (the caption) stays free of banners; the glitch layer may cover it
-  const CLEAR = .78;
+  // fraction of the margin height that gets banners (1 = all the way down)
+  const CLEAR = 1;
 
   // banners sit still in rows over the photo (clipped at the edges like a collage); their insides animate
   function layout(layer, W, H, k) {
