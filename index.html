@@ -68,7 +68,7 @@
   }
   .ob.red    { background: #e0141e; color: #fff; font: bold 13px Arial, sans-serif; border-radius: 3px; }
   .ob.red b  { text-decoration: underline; }
-  .ob.yellow { background: #ffef3a; color: #000; font-size: 17px; white-space: normal; width: 190px; }
+  .ob.yellow { background: #ffef3a; color: #000; font-size: 17px; }
   .ob.rainbow { background: linear-gradient(135deg,#ff3b8d,#ffa53b,#fff23b,#3bff8a,#3bb4ff,#a23bff); color: #fff;
                 font: italic bold 20px Arial, sans-serif; text-shadow: 2px 2px 3px #000, 0 0 6px #00f; }
   .ob.blue   { border: 3px solid #1a1ad6; color: #1a1ad6; text-decoration: underline; font-size: 19px; }
@@ -167,49 +167,39 @@
 </div>
 
 <script>
-// scatter horse-themed web-button banners over the whole page (stable positions, no jumping on reload)
+// horse-themed web-button banners that drift randomly around the page
 (function () {
-  const BANNERS = [
-    ['red',      'give <b>ANYTHING</b> just to ride you 🐴'],
-    ['yellow',   'CLICK to be saddled!<br>CLICK to be ridden!<br>CLICK to be groomed!<br>CLICK to be loved!'],
-    ['rainbow',  'CLICK to be galloped! 🐎'],
-    ['blue',     'Please be horse-blogging 🐴'],
-    ['pinkdash', 'hay is for horses 🌾'],
-    ['glow',     "I'm always at the stable"],
-    ['pinkfill', 'loving horses makes me surreal'],
-    ['dotted',   '🐴 stable dream 🐴'],
-    ['cyan',     "I'm your favorite pony 🐎"],
-    ['purple',   'cybernetic horse girl'],
-    ['big',      'I LOVE MY HORSES'],
-    ['script',   'do you want to pet a horse?'],
-    ['pastel',   'forget to hay index'],
-    ['blackred', 'CLICK to be bridled!'],
-    ['blue',     '100% genuine horse girl 🐴'],
-    ['pinkdash', 'neigh-borhood algorithm'],
-    ['glow',     'trot trot trot 🐎'],
-    ['pinkfill', 'ambient horse 🐴'],
-    ['dotted',   'do you believe in horses?'],
-    ['cyan',     'mane character 🐎'],
-    ['red',      'CLICK FOR STABLE'],
-    ['script',   'you can lead a horse to www'],
-    ['purple',   'internet pony 🐴'],
-    ['big',      'HORSE GIRL FOREVER']
-  ];
-  let s = 7; const r = () => (s = (s * 16807) % 2147483647) / 2147483647;
+  const TEXT = 'do you believe in horses?';
+  const STYLES = ['red','yellow','rainbow','blue','pinkdash','glow','pinkfill','dotted',
+                  'cyan','purple','big','script','pastel','blackred','blue','pinkdash',
+                  'glow','pinkfill','dotted','cyan','red','script','purple','big'];
   const doc = document.documentElement;
+  const rnd = (a, b) => a + Math.random() * (b - a);
+  let timers = [];
+
+  function move(el) {
+    const w = doc.scrollWidth, h = Math.max(doc.scrollHeight, innerHeight);
+    const dur = rnd(4, 9);
+    el.style.transition = 'left ' + dur + 's ease-in-out, top ' + dur + 's ease-in-out, transform ' + dur + 's ease-in-out';
+    el.style.left = Math.max(0, rnd(0, w - el.offsetWidth)) + 'px';
+    el.style.top = Math.max(0, rnd(0, h - el.offsetHeight)) + 'px';
+    el.style.transform = 'rotate(' + rnd(-10, 10).toFixed(1) + 'deg)';
+    timers.push(setTimeout(() => move(el), dur * 1000));
+  }
+
   function place() {
+    timers.forEach(clearTimeout); timers = [];
     document.querySelectorAll('.ob').forEach(e => e.remove());
     const w = doc.scrollWidth, h = Math.max(doc.scrollHeight, innerHeight);
-    const n = Math.min(BANNERS.length, Math.max(8, Math.round((w * h) / 70000)));
-    s = 7;
+    const n = Math.min(STYLES.length, Math.max(8, Math.round((w * h) / 70000)));
     for (let i = 0; i < n; i++) {
-      const [cls, html] = BANNERS[i];
       const el = document.createElement('div');
-      el.className = 'ob ' + cls; el.innerHTML = html;
+      el.className = 'ob ' + STYLES[i]; el.textContent = TEXT;
       document.body.appendChild(el);
-      el.style.left = Math.max(0, r() * (w - el.offsetWidth)) + 'px';
-      el.style.top = Math.max(0, r() * (h - el.offsetHeight)) + 'px';
-      el.style.transform = 'rotate(' + (r() * 16 - 8).toFixed(1) + 'deg)';
+      // start somewhere random, then begin drifting on the next frame
+      el.style.left = Math.max(0, rnd(0, w - el.offsetWidth)) + 'px';
+      el.style.top = Math.max(0, rnd(0, h - el.offsetHeight)) + 'px';
+      requestAnimationFrame(() => requestAnimationFrame(() => move(el)));
     }
   }
   addEventListener('load', place);
