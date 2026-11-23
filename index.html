@@ -124,6 +124,7 @@
   .fx .grain { position: absolute; inset: 0; opacity: .55; mix-blend-mode: overlay;
     background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 .9 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>"); }
   .fx .blk { position: absolute; overflow: hidden; }
+  .fx .blk, .fx .word { opacity: 0; transition: opacity .7s ease-in-out; }
   .fx .blk.tint  { backdrop-filter: blur(3px) saturate(.7) brightness(1.15); }
   .fx .blk.slice { background-image: url("assets/last-straw.jpg"); filter: hue-rotate(60deg) saturate(.6) contrast(1.15) brightness(1.2); }
   .fx .word { position: absolute; white-space: pre; line-height: .95; font-family: Arial, Helvetica, sans-serif;
@@ -263,7 +264,7 @@
     ['big',       'i love my hyperlink ' + d('🐬')]
   ];
 
-  // lower part of the photo (the caption) stays free of banners and glitch blocks
+  // lower part of the photo (the caption) stays free of banners; the glitch layer may cover it
   const CLEAR = .78;
 
   // banners sit still in rows over the photo (clipped at the edges like a collage); their insides animate
@@ -288,9 +289,15 @@
 
   let gen = 0;
 
-  function loop(fn, gen0) {
-    fn();
-    setTimeout(() => { if (gen0 === gen) loop(fn, gen0); }, rnd(600, 2600));
+  // fade out, jump somewhere new while invisible, fade back in, hold for a bit, repeat
+  function loop(el, fn, gen0, delay) {
+    el.style.opacity = 0;
+    setTimeout(() => {
+      if (gen0 !== gen) return;
+      fn();
+      requestAnimationFrame(() => requestAnimationFrame(() => { el.style.opacity = 1; }));
+      setTimeout(() => { if (gen0 === gen) loop(el, fn, gen0, 750); }, rnd(1200, 3200));
+    }, delay);
   }
 
   function build() {
@@ -302,17 +309,17 @@
       layout(box.firstChild, W, H, side * 11);
       const add = (cls, n, move) => { for (let i = 0; i < n; i++) {
         const el = document.createElement('div'); el.className = cls; box.appendChild(el);
-        loop(() => move(el), g);
+        loop(el, () => move(el), g, rnd(0, 1500));
       } };
 
       add('blk tint', 9, el => {
-        el.style.left = rnd(-.1 * W, .8 * W) + 'px'; el.style.top = rnd(0, H * CLEAR) + 'px';
+        el.style.left = rnd(-.1 * W, .8 * W) + 'px'; el.style.top = rnd(0, H) + 'px';
         el.style.width = rnd(.2 * W, W) + 'px'; el.style.height = rnd(10, .16 * H) + 'px';
         el.style.background = TINTS[Math.floor(rnd(0, TINTS.length))];
       });
 
       add('blk slice', 8, el => {
-        const w = rnd(.3 * W, W * 1.1), h = rnd(12, .14 * H), x = rnd(-.1 * W, .7 * W), y = rnd(0, H * CLEAR - h);
+        const w = rnd(.3 * W, W * 1.1), h = rnd(12, .14 * H), x = rnd(-.1 * W, .7 * W), y = rnd(0, H - h);
         const dx = rnd(-.45 * W, .45 * W), dy = rnd(-20, 20);
         Object.assign(el.style, { left: x + 'px', top: y + 'px', width: w + 'px', height: h + 'px',
           backgroundSize: W + 'px ' + H + 'px', backgroundPosition: (-x + dx) + 'px ' + (-y + dy) + 'px' });
@@ -326,7 +333,7 @@
         el.className = 'word' + (r < .22 ? ' outline' : r < .42 ? ' soft' : r < .66 ? ' dark' : r < .82 ? ' blue' : '');
         const fs = rnd(40, Math.max(56, Math.min(W * .55, 150))) * (split ? 1.35 : 1);
         el.style.fontSize = fs + 'px';
-        el.style.left = rnd(-.15 * W, .5 * W) + 'px'; el.style.top = rnd(-.05 * H, Math.max(0, H * CLEAR - fs)) + 'px';
+        el.style.left = rnd(-.15 * W, .5 * W) + 'px'; el.style.top = rnd(-.05 * H, H - fs) + 'px';
       });
 
       for (let i = 0; i < 5; i++) { const h = document.createElement('div'); h.className = 'scratch h'; h.style.top = rnd(2, H) + 'px'; box.appendChild(h); }
