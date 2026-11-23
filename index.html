@@ -116,7 +116,6 @@
   @keyframes bl { 50% { opacity: .3; } }
   .ob.rainbow, .ob.pastel { animation: hue 6s linear infinite; }
   @keyframes hue { to { filter: hue-rotate(360deg); } }
-  @media (prefers-reduced-motion: reduce) { .ob, .ob * { animation: none !important; } }
 
   /* glitch / photocopy effect, confined to the horse photo margins */
   .fx { position: fixed; top: 0; bottom: 0; z-index: 5; pointer-events: none; overflow: hidden;
@@ -262,7 +261,6 @@
 // translucent blurry "horse" lettering (sometimes split over lines), grain and scratches
 (function () {
   const rnd = (a, b) => a + Math.random() * (b - a);
-  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
   const TINTS = ['rgba(225,240,245,.40)', 'rgba(200,225,235,.34)', 'rgba(40,80,200,.26)', 'rgba(10,20,40,.26)', 'rgba(255,255,255,.45)'];
   // [style, message]: original banner wording plus little decorations; edit freely (HTML allowed).
   // d('...') = small twinkling decoration glyph. Style 'mq' scrolls the text, SLIDER adds a moving slider.
@@ -296,11 +294,14 @@
     ['big',       'i love my hyperlink ' + d('🐬')]
   ];
 
+  // lower part of the photo (the caption) stays free of banners and glitch blocks
+  const CLEAR = .78;
+
   // banners sit still in rows over the photo (clipped at the edges like a collage); their insides animate
   function layout(layer, W, H, k) {
     let y = 6;
-    while (y < H) {
-      let x = -rnd(0, 60), rowH = 0; const row = [];
+    while (y < H * CLEAR) {
+      let x = -rnd(0, 80), rowH = 0; const row = [];
       while (x < W) {
         const [cls, html] = BANNERS[k++ % BANNERS.length];
         const el = document.createElement('div');
@@ -309,10 +310,10 @@
         el.querySelectorAll('.d').forEach(g => g.style.setProperty('--dl', (-rnd(0, 1.4)).toFixed(2) + 's'));
         layer.appendChild(el);
         const w = el.offsetWidth, h = el.offsetHeight;
-        el.style.left = x + 'px'; row.push([el, h]); rowH = Math.max(rowH, h); x += w + 10;
+        el.style.left = x + 'px'; row.push([el, h]); rowH = Math.max(rowH, h); x += w + rnd(24, 90);
       }
       row.forEach(([el, h]) => { el.style.top = (y + (rowH - h) / 2) + 'px'; });
-      y += rowH + 10;
+      y += rowH + rnd(34, 80);
     }
   }
 
@@ -320,7 +321,7 @@
 
   function loop(fn, gen0) {
     fn();
-    if (!reduce) setTimeout(() => { if (gen0 === gen) loop(fn, gen0); }, rnd(600, 2600));
+    setTimeout(() => { if (gen0 === gen) loop(fn, gen0); }, rnd(600, 2600));
   }
 
   function build() {
@@ -336,13 +337,13 @@
       } };
 
       add('blk tint', 9, el => {
-        el.style.left = rnd(-.1 * W, .8 * W) + 'px'; el.style.top = rnd(0, H) + 'px';
+        el.style.left = rnd(-.1 * W, .8 * W) + 'px'; el.style.top = rnd(0, H * CLEAR) + 'px';
         el.style.width = rnd(.2 * W, W) + 'px'; el.style.height = rnd(10, .16 * H) + 'px';
         el.style.background = TINTS[Math.floor(rnd(0, TINTS.length))];
       });
 
       add('blk slice', 8, el => {
-        const w = rnd(.3 * W, W * 1.1), h = rnd(12, .14 * H), x = rnd(-.1 * W, .7 * W), y = rnd(0, H - h);
+        const w = rnd(.3 * W, W * 1.1), h = rnd(12, .14 * H), x = rnd(-.1 * W, .7 * W), y = rnd(0, H * CLEAR - h);
         const dx = rnd(-.45 * W, .45 * W), dy = rnd(-20, 20);
         Object.assign(el.style, { left: x + 'px', top: y + 'px', width: w + 'px', height: h + 'px',
           backgroundSize: W + 'px ' + H + 'px', backgroundPosition: (-x + dx) + 'px ' + (-y + dy) + 'px' });
@@ -356,7 +357,7 @@
         el.className = 'word' + (r < .22 ? ' outline' : r < .42 ? ' soft' : r < .66 ? ' dark' : r < .82 ? ' blue' : '');
         const fs = rnd(40, Math.max(56, Math.min(W * .55, 150))) * (split ? 1.35 : 1);
         el.style.fontSize = fs + 'px';
-        el.style.left = rnd(-.15 * W, .5 * W) + 'px'; el.style.top = rnd(-.05 * H, H - fs) + 'px';
+        el.style.left = rnd(-.15 * W, .5 * W) + 'px'; el.style.top = rnd(-.05 * H, Math.max(0, H * CLEAR - fs)) + 'px';
       });
 
       for (let i = 0; i < 5; i++) { const h = document.createElement('div'); h.className = 'scratch h'; h.style.top = rnd(2, H) + 'px'; box.appendChild(h); }
