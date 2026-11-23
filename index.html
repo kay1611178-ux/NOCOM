@@ -28,6 +28,8 @@
   .side { width: 33.34%; }
   .side.left { left: 0; }
   .mid { left: 33.33%; width: 33.34%; }
+  /* centre section only: sits in front of the jellyfish, behind everything else */
+  .mid2 { position: fixed; top: 0; left: 33.33%; width: 33.34%; height: 100vh; object-fit: fill; z-index: 0; pointer-events: none; }
   .side.right { right: 0; }
   #wrap { position: fixed; z-index: 2; left: 50%; top: 50%; transform: translate(-50%, -50%);
           width: clamp(740px, 72.3vw, 1700px); height: clamp(440px, 75.6vh, 1000px); max-width: 94vw; max-height: 92vh; }
@@ -168,7 +170,7 @@
   .fx .blk, .fx .word { opacity: 0; transition: opacity .7s ease-in-out; }
   .fx .blk.tint  { backdrop-filter: blur(3px) saturate(.7) brightness(1.15); }
   /* rare smog pull: one continuous photo across left margin, main section and right margin */
-  html.rare .side, html.rare .mid { display: none; }
+  html.rare .side, html.rare .mid, html.rare .mid2, html.andrew .mid2 { display: none; }
   #rare { position: fixed; inset: 0; width: 100vw; height: 100vh; object-fit: fill; z-index: 0; pointer-events: none; }
   .fx .blk.slice { background-image: url("assets/jellyfish.jpg"); filter: hue-rotate(60deg) saturate(.6) contrast(1.15) brightness(1.2); }
   html.rare .fx .blk.slice { background-image: var(--rare-url); }
@@ -209,6 +211,7 @@
 </script>
 <img class="side left" src="assets/jellyfish.jpg" alt="">
 <img class="mid" src="assets/jellyfish.jpg" alt="">
+<img class="mid2" src="assets/forest.jpg" alt="">
 <img class="side right" src="assets/jellyfish.jpg" alt="">
 
 <div id="wrap">
