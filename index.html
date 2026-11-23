@@ -59,6 +59,12 @@
   .friends { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; text-align: center; padding: 8px; }
   .friends img { width: 80px; height: 80px; object-fit: cover; background: #fff; display: block; margin: 2px auto 0; }
 
+  /* horse stickers scattered behind the banners */
+  .overlay-sticker {
+    position: absolute; width: 56px; height: auto; pointer-events: none;
+    opacity: .55; mix-blend-mode: multiply; z-index: 4;
+  }
+
   /* retro web-button banners overlaid on the page */
   .ob {
     position: absolute; z-index: 5; pointer-events: none; opacity: .88;
@@ -167,7 +173,7 @@
 </div>
 
 <script>
-// horse-themed web-button banners that drift randomly around the page
+// horse stickers scattered over the page, with horse-themed web-button banners drifting on top
 (function () {
   // [style, message]: placeholder text for now, edit each message (HTML allowed) as you like
   const BANNERS = [
@@ -200,6 +206,24 @@
   const rnd = (a, b) => a + Math.random() * (b - a);
   let timers = [];
 
+  // static horse stickers (stable positions) sitting behind the banners
+  let seed = 7; const srnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+  function stickers(w, h) {
+    document.querySelectorAll('.overlay-sticker').forEach(e => e.remove());
+    seed = 7;
+    const n = Math.round((w * h) / 45000);
+    for (let i = 0; i < n; i++) {
+      const img = new Image();
+      img.src = 'assets/horse-sticker.png'; img.alt = ''; img.className = 'overlay-sticker';
+      const size = 40 + srnd() * 40;
+      img.style.width = size + 'px';
+      img.style.left = (srnd() * (w - size)) + 'px';
+      img.style.top = (srnd() * (h - size)) + 'px';
+      img.style.transform = 'rotate(' + (srnd() * 60 - 30).toFixed(0) + 'deg)';
+      document.body.appendChild(img);
+    }
+  }
+
   function move(el) {
     const w = doc.scrollWidth, h = Math.max(doc.scrollHeight, innerHeight);
     const dur = rnd(4, 9);
@@ -214,6 +238,7 @@
     timers.forEach(clearTimeout); timers = [];
     document.querySelectorAll('.ob').forEach(e => e.remove());
     const w = doc.scrollWidth, h = Math.max(doc.scrollHeight, innerHeight);
+    stickers(w, h);
     const n = Math.min(BANNERS.length, Math.max(8, Math.round((w * h) / 70000)));
     for (let i = 0; i < n; i++) {
       const el = document.createElement('div');
