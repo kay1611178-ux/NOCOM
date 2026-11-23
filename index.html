@@ -229,7 +229,7 @@
 <div class="fx right" aria-hidden="true"></div>
 <script>
 // banners + glitch effect over the two horse-photo margins: banners laid out over the photo, then shifted photo slices, blurred blocks,
-// translucent blurry "horse" lettering (sometimes split over lines), grain and scratches
+// translucent blurry "NOCOM" lettering (sometimes split over lines), grain and scratches
 (function () {
   const rnd = (a, b) => a + Math.random() * (b - a);
   const TINTS = ['rgba(225,240,245,.40)', 'rgba(200,225,235,.34)', 'rgba(40,80,200,.26)', 'rgba(10,20,40,.26)', 'rgba(255,255,255,.45)'];
@@ -326,13 +326,13 @@
           backgroundSize: W + 'px ' + H + 'px', backgroundPosition: (-x + dx) + 'px ' + (-y + dy) + 'px' });
       });
 
-      // translucent, slightly blurry "horse" that sometimes breaks across lines (hor / se ...)
-      const SPLITS = ['hor\nse', 'ho\nrse', 'h\norse', 'hors\ne', 'ho\nrs\ne'];
+      // translucent, slightly blurry "NOCOM" that sometimes breaks across lines (NOC / OM ...)
+      const SPLITS = ['NOC\nOM', 'NO\nCOM', 'N\nOCOM', 'NOCO\nM', 'NO\nCO\nM'];
       add('word', 7, el => {
         const r = Math.random(), split = Math.random() < .35;
-        el.textContent = split ? SPLITS[Math.floor(rnd(0, SPLITS.length))] : 'horse';
+        el.textContent = split ? SPLITS[Math.floor(rnd(0, SPLITS.length))] : 'NOCOM';
         el.className = 'word' + (r < .22 ? ' outline' : r < .42 ? ' soft' : r < .66 ? ' dark' : r < .82 ? ' blue' : '');
-        const fs = rnd(40, Math.max(56, Math.min(W * .55, 150))) * (split ? 1.35 : 1);
+        const fs = rnd(40, Math.max(56, Math.min(W * .45, 130))) * (split ? 1.35 : 1);
         el.style.fontSize = fs + 'px';
         el.style.left = rnd(-.15 * W, .5 * W) + 'px'; el.style.top = rnd(-.05 * H, H - fs) + 'px';
       });
