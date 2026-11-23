@@ -328,13 +328,7 @@
       });
 
       // translucent, slightly blurry "horse" that sometimes breaks across lines (hor / se ...)
-      const SPLITS = ['hor
-se', 'ho
-rse', 'h
-orse', 'hors
-e', 'ho
-rs
-e'];
+      const SPLITS = ['hor\nse', 'ho\nrse', 'h\norse', 'hors\ne', 'ho\nrs\ne'];
       add('word', 7, el => {
         const r = Math.random(), split = Math.random() < .35;
         el.textContent = split ? SPLITS[Math.floor(rnd(0, SPLITS.length))] : 'horse';
