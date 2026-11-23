@@ -19,9 +19,12 @@
   a { color: var(--link); font-weight: bold; text-decoration: none; }
   a:hover { text-decoration: underline; }
 
+  /* main section: nearly transparent background, with another last-straw photo stretched behind it */
+  #wrap { position: relative; z-index: 2; width: 740px; max-width: 100%; margin: 16px auto; }
+  #wrap .mid { position: fixed; top: 0; left: 50%; transform: translateX(-50%); width: min(740px, 100vw); height: 100vh; object-fit: fill; z-index: 0; pointer-events: none; }
   #page {
-    width: 740px; max-width: 100%; margin: 16px auto; padding: 8px;
-    background: var(--teal); position: relative; z-index: 2;
+    width: 100%; margin: 0; padding: 8px;
+    background: rgba(11, 122, 120, .95); position: relative; z-index: 1;
   }
   .panel, .bar {
     background:
@@ -53,7 +56,7 @@
   .panel { margin: 0; }
 
   .profile { display: flex; gap: 10px; padding: 6px; }
-  .profile img { width: 130px; height: 130px; object-fit: cover; border: 1px solid #000; background: #fff; }
+  .profile img { width: 130px; height: 130px; object-fit: contain; border: 1px solid #000; background: #fff; }
   .profile .quote { font-size: 12px; }
   .online { display: inline-block; margin-top: 6px; padding: 0 5px; background: #fff; border: 1px solid #777; border-radius: 4px; font-size: 11px; }
 
@@ -68,15 +71,15 @@
   .friends { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; text-align: center; padding: 8px; }
   .friends img { width: 80px; height: 80px; object-fit: cover; background: #fff; display: block; margin: 2px auto 0; }
 
-  /* horse stickers scattered behind the banners */
+  /* horse emoji scattered over the page, under the margin banners */
   .overlay-sticker {
-    position: absolute; width: 56px; height: auto; pointer-events: none;
-    opacity: .55; mix-blend-mode: multiply; z-index: 4;
+    position: absolute; pointer-events: none; line-height: 1; opacity: .8; z-index: 4;
+    font-family: "Segoe UI Emoji", "Apple Color Emoji", "Noto Color Emoji", sans-serif;
   }
 
   /* retro web-button banners overlaid on the page */
   .ob {
-    position: absolute; z-index: 5; pointer-events: none; opacity: .88;
+    position: absolute; pointer-events: none;
     white-space: nowrap; line-height: 1.15; text-align: center;
     padding: 6px 12px; font-family: "Times New Roman", Georgia, serif; font-size: 16px;
     background: #fff;
@@ -102,10 +105,26 @@
   .ob u { text-decoration-thickness: 1.5px; text-underline-offset: 2px; text-shadow: 0 3px 6px rgba(70,90,255,.7); }
   .ob.blackred { background: #0a0a96; color: #f00; font: bold 14px Arial, sans-serif; border: 2px solid #f00; }
 
+  /* in-place banner animations (marquee text, sliders, twinkling glyphs, blinking, hue shifts) */
+  .ob.mq { width: 200px; overflow: hidden; }
+  .ob .mqin { display: inline-block; animation: mq 8s linear infinite; }
+  @keyframes mq { from { transform: translateX(200px); } to { transform: translateX(-100%); } }
+  .ob .slide { display: block; position: relative; height: 8px; margin: 6px 0 1px; background: #d8d8d8; border-radius: 4px; width: 150px; }
+  .ob .slide i { position: absolute; top: -2px; left: 0; width: 36px; height: 12px; border-radius: 6px; background: #2f6fe8;
+                 animation: sl 3s ease-in-out infinite alternate; }
+  @keyframes sl { from { left: 0; } to { left: calc(100% - 36px); } }
+  .ob .d { animation: tw 1.4s ease-in-out infinite; animation-delay: var(--dl, 0s); }
+  @keyframes tw { 0%, 100% { opacity: .95; } 50% { opacity: .15; } }
+  .ob.blink { animation: bl 1.2s steps(1, end) infinite; }
+  @keyframes bl { 50% { opacity: .3; } }
+  .ob.rainbow, .ob.pastel { animation: hue 6s linear infinite; }
+  @keyframes hue { to { filter: hue-rotate(360deg); } }
+
   /* glitch / photocopy effect, confined to the horse photo margins */
-  .fx { position: fixed; top: 0; bottom: 0; z-index: 1; pointer-events: none; overflow: hidden;
+  .fx { position: fixed; top: 0; bottom: 0; z-index: 5; pointer-events: none; overflow: hidden;
         width: max(0px, calc(50vw - 370px)); }
   .fx.left { left: 0; } .fx.right { right: 0; }
+  .fx .bn { position: absolute; inset: 0; z-index: 3; }
   .fx .wash { position: absolute; inset: 0; mix-blend-mode: screen;
     background: linear-gradient(160deg, rgba(210,235,245,.28), rgba(30,70,190,.18)); }
   .fx .grain { position: absolute; inset: 0; opacity: .55; mix-blend-mode: overlay;
@@ -131,6 +150,8 @@
 <img class="side left" src="assets/last-straw.jpg" alt="">
 <img class="side right" src="assets/last-straw.jpg" alt="">
 
+<div id="wrap">
+<img class="mid" src="assets/last-straw.jpg" alt="">
 <div id="page">
   <div class="bar">
     <h1 class="title" style="font-size:12px">horses - Microsoft Internet Explorer</h1>
@@ -148,7 +169,7 @@
       <div class="panel"><h2 class="title">Horse Lover</h2></div>
 
       <div class="panel profile">
-        <img src="assets/profile.png" alt="profile picture">
+        <img src="assets/horse-sticker.png" alt="profile picture">
         <div>
           <div class="quote">"neigh"</div>
           <span class="online">ONLINE</span>
@@ -206,54 +227,24 @@
     </div>
   </div>
 </div>
+</div>
 
 <script>
-// horse stickers scattered over the page, with horse-themed web-button banners drifting on top
+// horse emoji scattered over the page
 (function () {
-  // [style, message]: original banner wording plus the little decorations; edit freely (HTML allowed).
-  // d('...') makes a small, slightly faded decoration glyph.
-  const d = t => '<span class="d">' + t + '</span>';
-  const BANNERS = [
-    ['red',      'give <b>ANYTHING</b> just to love you ' + d('💿')],
-    ['yellow',   d('🌈') + ' CLICK to be touched!<br>CLICK to be downloaded!<br>CLICK to be saved!<br>CLICK to be loved!'],
-    ['rainbow',  'CLICK to be downloaded!<br>CLICK to be blocked! ' + d('✧')],
-    ['blue',     'Please be <u>girlblogging</u> ' + d('✦')],
-    ['pinkdash', d('♡') + ' hug me dream me document me ' + d('♡')],
-    ['glow',     d('🧸') + " I'm always texting"],
-    ['pinkfill', d('❤') + ' loving makes me surreal ' + d('✿')],
-    ['dotted',   d('⋆｡°✩') + ' internet dream ' + d('✩°｡⋆')],
-    ['cyan',     "I'm your algorithm " + d('❤')],
-    ['purple',   'cybernetic baby ' + d('✦')],
-    ['big',      'I LOVE MY HYPERTEXT<br>' + d('✦ ˖ ⋆ ❤ ⋆ ˖ ✦')],
-    ['script',   'do you want to hug?<br>' + d('˚ ₊ ⋆ ✧ ⋆ ₊ ˚')],
-    ['pastel',   d('⋆˚✿˖°') + ' forget to index ' + d('°˖✿˚⋆')],
-    ['blackred', 'CLICK to be <span style="color:#fff">darling!</span>'],
-    ['blue',     '100% <u>genuine</u> ' + d('🐎')],
-    ['pinkdash', d('✦') + ' this user creates ' + d('✦')],
-    ['glow',     d('✧') + ' I love my <u>poetic computer</u> ' + d('✧')],
-    ['pinkfill', d('🎀') + ' my ambient girl ' + d('🌸')],
-    ['dotted',   d('❝') + ' do you believe in uploading? ' + d('❞')],
-    ['cyan',     'Computer savior ' + d('✧')],
-    ['red',      'CLICK <b>FOR</b> CONNECTION! ' + d('🪽')],
-    ['script',   d('✦ •') + ' program soldier ' + d('• ✦')],
-    ['purple',   d('❥') + ' post-database destiny ' + d('❥')],
-    ['big',      'i love my hyperlink ' + d('🐬')]
-  ];
   const doc = document.documentElement;
   const rnd = (a, b) => a + Math.random() * (b - a);
-  let timers = [];
-
-  // static horse stickers (stable positions) sitting behind the banners
+  // static horse emoji (stable positions) sitting under the margin banners
   let seed = 7; const srnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
   function stickers(w, h) {
     document.querySelectorAll('.overlay-sticker').forEach(e => e.remove());
     seed = 7;
     const n = Math.round((w * h) / 45000);
     for (let i = 0; i < n; i++) {
-      const img = new Image();
-      img.src = 'assets/horse-sticker.png'; img.alt = ''; img.className = 'overlay-sticker';
-      const size = 40 + srnd() * 40;
-      img.style.width = size + 'px';
+      const img = document.createElement('span');
+      img.textContent = srnd() < .5 ? '🐴' : '🐎'; img.className = 'overlay-sticker';
+      const size = 24 + srnd() * 26;
+      img.style.fontSize = size + 'px';
       img.style.left = (srnd() * (w - size)) + 'px';
       img.style.top = (srnd() * (h - size)) + 'px';
       img.style.transform = 'rotate(' + (srnd() * 60 - 30).toFixed(0) + 'deg)';
@@ -261,31 +252,9 @@
     }
   }
 
-  function move(el) {
-    const w = doc.scrollWidth, h = Math.max(doc.scrollHeight, innerHeight);
-    const dur = rnd(4, 9);
-    el.style.transition = 'left ' + dur + 's ease-in-out, top ' + dur + 's ease-in-out, transform ' + dur + 's ease-in-out';
-    el.style.left = Math.max(0, rnd(0, w - el.offsetWidth)) + 'px';
-    el.style.top = Math.max(0, rnd(0, h - el.offsetHeight)) + 'px';
-    el.style.transform = 'rotate(' + rnd(-10, 10).toFixed(1) + 'deg)';
-    timers.push(setTimeout(() => move(el), dur * 1000));
-  }
-
   function place() {
-    timers.forEach(clearTimeout); timers = [];
-    document.querySelectorAll('.ob').forEach(e => e.remove());
     const w = doc.scrollWidth, h = Math.max(doc.scrollHeight, innerHeight);
     stickers(w, h);
-    const n = Math.min(BANNERS.length, Math.max(8, Math.round((w * h) / 70000)));
-    for (let i = 0; i < n; i++) {
-      const el = document.createElement('div');
-      el.className = 'ob ' + BANNERS[i][0]; el.innerHTML = BANNERS[i][1];
-      document.body.appendChild(el);
-      // start somewhere random, then begin drifting on the next frame
-      el.style.left = Math.max(0, rnd(0, w - el.offsetWidth)) + 'px';
-      el.style.top = Math.max(0, rnd(0, h - el.offsetHeight)) + 'px';
-      requestAnimationFrame(() => requestAnimationFrame(() => move(el)));
-    }
   }
   addEventListener('load', place);
   let t; addEventListener('resize', () => { clearTimeout(t); t = setTimeout(place, 200); });
@@ -294,38 +263,93 @@
 <div class="fx left" aria-hidden="true"></div>
 <div class="fx right" aria-hidden="true"></div>
 <script>
-// glitch effect over the two horse-photo margins: shifted photo slices, blurred blocks,
+// banners + glitch effect over the two horse-photo margins: banners laid out over the photo, then shifted photo slices, blurred blocks,
 // translucent blurry "horse" lettering (sometimes split over lines), grain and scratches
 (function () {
   const rnd = (a, b) => a + Math.random() * (b - a);
-  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
   const TINTS = ['rgba(225,240,245,.40)', 'rgba(200,225,235,.34)', 'rgba(40,80,200,.26)', 'rgba(10,20,40,.26)', 'rgba(255,255,255,.45)'];
+  // [style, message]: original banner wording plus little decorations; edit freely (HTML allowed).
+  // d('...') = small twinkling decoration glyph. Style 'mq' scrolls the text, SLIDER adds a moving slider.
+  const d = t => '<span class="d">' + t + '</span>';
+  const SLIDER = '<span class="slide"><i></i></span>';
+  const BANNERS = [
+    ['red mq',    'give <b>ANYTHING</b> just to love you ' + d('💿')],
+    ['yellow',    d('🌈') + ' CLICK to be touched!<br>CLICK to be downloaded!<br>CLICK to be saved!<br>CLICK to be loved!'],
+    ['rainbow',   'CLICK to be downloaded!<br>CLICK to be blocked! ' + d('✧')],
+    ['blue',      'Please be <u>girlblogging</u> ' + d('✦')],
+    ['pinkdash mq', d('♡') + ' hug me dream me document me ' + d('♡')],
+    ['glow',      d('🧸') + " I'm always texting"],
+    ['pinkfill',  d('❤') + ' loving makes me surreal ' + d('✿')],
+    ['dotted',    d('⋆｡°✩') + ' internet dream ' + d('✩°｡⋆') + SLIDER],
+    ['cyan',      "I'm your algorithm " + d('❤')],
+    ['purple',    'cybernetic baby ' + d('✦')],
+    ['big',       'I LOVE MY HYPERTEXT<br>' + d('✦ ˖ ⋆ ❤ ⋆ ˖ ✦')],
+    ['blue',      d('❝') + ' sometimes lover ' + d('❞') + SLIDER],
+    ['script',    'do you want to hug?<br>' + d('˚ ₊ ⋆ ✧ ⋆ ₊ ˚')],
+    ['pastel',    d('⋆˚✿˖°') + ' forget to index ' + d('°˖✿˚⋆')],
+    ['blackred blink', 'CLICK to be <span style="color:#fff">darling!</span>'],
+    ['blue',      '100% <u>genuine</u> ' + d('🐎')],
+    ['pinkdash',  d('✦') + ' this user creates ' + d('✦')],
+    ['glow',      d('✧') + ' I love my <u>poetic computer</u> ' + d('✧')],
+    ['pinkfill',  d('🎀') + ' my ambient girl ' + d('🌸')],
+    ['dotted',    d('❝') + ' do you believe in uploading? ' + d('❞')],
+    ['cyan',      'Computer savior ' + d('✧')],
+    ['red blink', 'CLICK <b>FOR</b> CONNECTION! ' + d('🪽')],
+    ['script',    d('✦ •') + ' program soldier ' + d('• ✦')],
+    ['purple',    d('❥') + ' post-database destiny ' + d('❥')],
+    ['big',       'i love my hyperlink ' + d('🐬')]
+  ];
+
+  // lower part of the photo (the caption) stays free of banners and glitch blocks
+  const CLEAR = .78;
+
+  // banners sit still in rows over the photo (clipped at the edges like a collage); their insides animate
+  function layout(layer, W, H, k) {
+    let y = 6;
+    while (y < H * CLEAR) {
+      let x = -rnd(0, 80), rowH = 0; const row = [];
+      while (x < W) {
+        const [cls, html] = BANNERS[k++ % BANNERS.length];
+        const el = document.createElement('div');
+        el.className = 'ob ' + cls;
+        el.innerHTML = cls.indexOf('mq') >= 0 ? '<span class="mqin">' + html + '</span>' : html;
+        el.querySelectorAll('.d').forEach(g => g.style.setProperty('--dl', (-rnd(0, 1.4)).toFixed(2) + 's'));
+        layer.appendChild(el);
+        const w = el.offsetWidth, h = el.offsetHeight;
+        el.style.left = x + 'px'; row.push([el, h]); rowH = Math.max(rowH, h); x += w + rnd(24, 90);
+      }
+      row.forEach(([el, h]) => { el.style.top = (y + (rowH - h) / 2) + 'px'; });
+      y += rowH + rnd(34, 80);
+    }
+  }
+
   let gen = 0;
 
   function loop(fn, gen0) {
     fn();
-    if (!reduce) setTimeout(() => { if (gen0 === gen) loop(fn, gen0); }, rnd(600, 2600));
+    setTimeout(() => { if (gen0 === gen) loop(fn, gen0); }, rnd(600, 2600));
   }
 
   function build() {
     gen++; const g = gen;
-    document.querySelectorAll('.fx').forEach(box => {
-      box.innerHTML = '<div class="wash"></div><div class="grain"></div>';
+    document.querySelectorAll('.fx').forEach((box, side) => {
+      box.innerHTML = '<div class="bn"></div><div class="wash"></div><div class="grain"></div>';
       const W = box.clientWidth, H = box.clientHeight;
       if (W < 24) return;
+      layout(box.firstChild, W, H, side * 11);
       const add = (cls, n, move) => { for (let i = 0; i < n; i++) {
         const el = document.createElement('div'); el.className = cls; box.appendChild(el);
         loop(() => move(el), g);
       } };
 
       add('blk tint', 9, el => {
-        el.style.left = rnd(-.1 * W, .8 * W) + 'px'; el.style.top = rnd(0, H) + 'px';
+        el.style.left = rnd(-.1 * W, .8 * W) + 'px'; el.style.top = rnd(0, H * CLEAR) + 'px';
         el.style.width = rnd(.2 * W, W) + 'px'; el.style.height = rnd(10, .16 * H) + 'px';
         el.style.background = TINTS[Math.floor(rnd(0, TINTS.length))];
       });
 
       add('blk slice', 8, el => {
-        const w = rnd(.3 * W, W * 1.1), h = rnd(12, .14 * H), x = rnd(-.1 * W, .7 * W), y = rnd(0, H - h);
+        const w = rnd(.3 * W, W * 1.1), h = rnd(12, .14 * H), x = rnd(-.1 * W, .7 * W), y = rnd(0, H * CLEAR - h);
         const dx = rnd(-.45 * W, .45 * W), dy = rnd(-20, 20);
         Object.assign(el.style, { left: x + 'px', top: y + 'px', width: w + 'px', height: h + 'px',
           backgroundSize: W + 'px ' + H + 'px', backgroundPosition: (-x + dx) + 'px ' + (-y + dy) + 'px' });
@@ -339,7 +363,7 @@
         el.className = 'word' + (r < .22 ? ' outline' : r < .42 ? ' soft' : r < .66 ? ' dark' : r < .82 ? ' blue' : '');
         const fs = rnd(40, Math.max(56, Math.min(W * .55, 150))) * (split ? 1.35 : 1);
         el.style.fontSize = fs + 'px';
-        el.style.left = rnd(-.15 * W, .5 * W) + 'px'; el.style.top = rnd(-.05 * H, H - fs) + 'px';
+        el.style.left = rnd(-.15 * W, .5 * W) + 'px'; el.style.top = rnd(-.05 * H, Math.max(0, H * CLEAR - fs)) + 'px';
       });
 
       for (let i = 0; i < 5; i++) { const h = document.createElement('div'); h.className = 'scratch h'; h.style.top = rnd(2, H) + 'px'; box.appendChild(h); }
