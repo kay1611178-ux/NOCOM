@@ -98,6 +98,8 @@
   .ob.script { border: 2px dashed #000; color: #000; font: italic 15px Georgia, serif; }
   .ob.pastel { background: repeating-linear-gradient(45deg,#c9efff 0 6px,#ffd6ef 6px 12px); color: #fff;
                font: bold 19px Arial, sans-serif; text-shadow: 1px 1px 2px #8a6ad0; }
+  .ob .d { font-size: .8em; opacity: .85; font-style: normal; font-weight: normal; letter-spacing: .05em; text-decoration: none; }
+  .ob u { text-decoration-thickness: 1.5px; text-underline-offset: 2px; text-shadow: 0 3px 6px rgba(70,90,255,.7); }
   .ob.blackred { background: #0a0a96; color: #f00; font: bold 14px Arial, sans-serif; border: 2px solid #f00; }
 
   /* glitch / photocopy effect, confined to the horse photo margins */
@@ -208,32 +210,34 @@
 <script>
 // horse stickers scattered over the page, with horse-themed web-button banners drifting on top
 (function () {
-  // [style, message]: the original wording from the banner reference; edit any message (HTML allowed)
+  // [style, message]: original banner wording plus the little decorations; edit freely (HTML allowed).
+  // d('...') makes a small, slightly faded decoration glyph.
+  const d = t => '<span class="d">' + t + '</span>';
   const BANNERS = [
-    ['red',      'give <b>ANYTHING</b> just to love you'],
-    ['yellow',   'CLICK to be touched!<br>CLICK to be downloaded!<br>CLICK to be saved!<br>CLICK to be loved!'],
-    ['rainbow',  'CLICK to be downloaded!<br>CLICK to be blocked!'],
-    ['blue',     'Please be girlblogging'],
-    ['pinkdash', 'hug me dream me document me'],
-    ['glow',     "I'm always texting"],
-    ['pinkfill', 'loving makes me surreal'],
-    ['dotted',   'internet dream'],
-    ['cyan',     "I'm your algorithm"],
-    ['purple',   'cybernetic baby'],
-    ['big',      'I LOVE MY HYPERTEXT'],
-    ['script',   'do you want to hug?'],
-    ['pastel',   'forget to index'],
-    ['blackred', 'CLICK to be darling!'],
-    ['blue',     '100% genuine'],
-    ['pinkdash', 'this user creates'],
-    ['glow',     'I love my poetic computer'],
-    ['pinkfill', 'my ambient girl'],
-    ['dotted',   'do you believe in uploading?'],
-    ['cyan',     'Computer savior'],
-    ['red',      'CLICK <b>FOR</b> CONNECTION!'],
-    ['script',   'program soldier'],
-    ['purple',   'post-database destiny'],
-    ['big',      'i love my hyperlink']
+    ['red',      'give <b>ANYTHING</b> just to love you ' + d('💿')],
+    ['yellow',   d('🌈') + ' CLICK to be touched!<br>CLICK to be downloaded!<br>CLICK to be saved!<br>CLICK to be loved!'],
+    ['rainbow',  'CLICK to be downloaded!<br>CLICK to be blocked! ' + d('✧')],
+    ['blue',     'Please be <u>girlblogging</u> ' + d('✦')],
+    ['pinkdash', d('♡') + ' hug me dream me document me ' + d('♡')],
+    ['glow',     d('🧸') + " I'm always texting"],
+    ['pinkfill', d('❤') + ' loving makes me surreal ' + d('✿')],
+    ['dotted',   d('⋆｡°✩') + ' internet dream ' + d('✩°｡⋆')],
+    ['cyan',     "I'm your algorithm " + d('❤')],
+    ['purple',   'cybernetic baby ' + d('✦')],
+    ['big',      'I LOVE MY HYPERTEXT<br>' + d('✦ ˖ ⋆ ❤ ⋆ ˖ ✦')],
+    ['script',   'do you want to hug?<br>' + d('˚ ₊ ⋆ ✧ ⋆ ₊ ˚')],
+    ['pastel',   d('⋆˚✿˖°') + ' forget to index ' + d('°˖✿˚⋆')],
+    ['blackred', 'CLICK to be <span style="color:#fff">darling!</span>'],
+    ['blue',     '100% <u>genuine</u> ' + d('🐎')],
+    ['pinkdash', d('✦') + ' this user creates ' + d('✦')],
+    ['glow',     d('✧') + ' I love my <u>poetic computer</u> ' + d('✧')],
+    ['pinkfill', d('🎀') + ' my ambient girl ' + d('🌸')],
+    ['dotted',   d('❝') + ' do you believe in uploading? ' + d('❞')],
+    ['cyan',     'Computer savior ' + d('✧')],
+    ['red',      'CLICK <b>FOR</b> CONNECTION! ' + d('🪽')],
+    ['script',   d('✦ •') + ' program soldier ' + d('• ✦')],
+    ['purple',   d('❥') + ' post-database destiny ' + d('❥')],
+    ['big',      'i love my hyperlink ' + d('🐬')]
   ];
   const doc = document.documentElement;
   const rnd = (a, b) => a + Math.random() * (b - a);
