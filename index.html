@@ -6,7 +6,7 @@
 <title>I like horses</title>
 <style>
   :root {
-    --teal: #0b7a78;
+    --teal: #d2386b;
     --panel: #b9b1a4;
     --ink: #111;
     --link: #1a1aa6;
@@ -19,12 +19,12 @@
   a { color: var(--link); font-weight: bold; text-decoration: none; }
   a:hover { text-decoration: underline; }
 
-  /* main section: nearly transparent background, with another last-straw photo stretched behind it */
+  /* main section: nearly transparent background, with the screenshot stretched behind it */
   #wrap { position: relative; z-index: 2; width: 740px; max-width: 100%; margin: 0 auto; min-height: 100vh; }
   #wrap .mid { position: fixed; top: 0; left: 50%; transform: translateX(-50%); width: min(740px, 100vw); height: 100vh; object-fit: fill; z-index: 0; pointer-events: none; }
   #page {
     width: 100%; margin: 0; padding: 16px 8px 8px; min-height: 100vh;
-    background: rgba(11, 122, 120, .95); position: relative; z-index: 1;
+    background: rgba(210, 56, 107, .85); position: relative; z-index: 1;
   }
   .panel, .bar {
     background:
@@ -89,7 +89,7 @@
   .ob.pinkfill { background: repeating-linear-gradient(45deg,#ff9fd8 0 4px,#ffc2e8 4px 8px); color: #7a1850;
                  font: italic 19px Georgia, serif; text-shadow: 1px 1px 0 #fff; }
   .ob.dotted { border: 3px dotted #1a1ad6; color: #1a1ad6; font: 15px Arial, sans-serif; }
-  .ob.cyan   { background: #3fe8f0; color: #6a0d8c; font: italic 19px Georgia, serif; }
+  .ob.cyan   { background: #d2386b; color: #fff; font: italic 19px Georgia, serif; }
   .ob.purple { border: 3px solid #7a1fb0; color: #000; font: bold 15px Georgia, serif; }
   .ob.big    { border: 4px solid #1a1ad6; color: #1a1ad6; font: bold 24px Arial, sans-serif; }
   .ob.script { border: 2px dashed #000; color: #000; font: italic 15px Georgia, serif; }
@@ -119,6 +119,7 @@
         width: max(0px, calc(50vw - 370px)); }
   .fx.left { left: 0; } .fx.right { right: 0; }
   .fx .bn { position: absolute; inset: 0; z-index: 3; }
+  .fx .bn .ob { opacity: .8; }
   .fx .wash { position: absolute; inset: 0; mix-blend-mode: screen;
     background: linear-gradient(160deg, rgba(210,235,245,.28), rgba(30,70,190,.18)); }
   .fx .grain { position: absolute; inset: 0; opacity: .55; mix-blend-mode: overlay;
@@ -126,7 +127,7 @@
   .fx .blk { position: absolute; overflow: hidden; }
   .fx .blk, .fx .word { opacity: 0; transition: opacity .7s ease-in-out; }
   .fx .blk.tint  { backdrop-filter: blur(3px) saturate(.7) brightness(1.15); }
-  .fx .blk.slice { background-image: url("assets/last-straw.jpg"); filter: hue-rotate(60deg) saturate(.6) contrast(1.15) brightness(1.2); }
+  .fx .blk.slice { background-image: url("assets/Screenshot%202026-09-01%20175449.png"); filter: hue-rotate(60deg) saturate(.6) contrast(1.15) brightness(1.2); }
   .fx .word { position: absolute; white-space: pre; line-height: .95; font-family: Arial, Helvetica, sans-serif;
               color: rgba(255,255,255,.5); mix-blend-mode: screen; filter: blur(1.5px); }
   .fx .word.outline { color: transparent; -webkit-text-stroke: 2px rgba(255,255,255,.8); }
@@ -142,11 +143,11 @@
 </head>
 <body>
 
-<img class="side left" src="assets/last-straw.jpg" alt="">
-<img class="side right" src="assets/last-straw.jpg" alt="">
+<img class="side left" src="assets/Screenshot%202026-09-01%20175449.png" alt="">
+<img class="side right" src="assets/Screenshot%202026-09-01%20175449.png" alt="">
 
 <div id="wrap">
-<img class="mid" src="assets/last-straw.jpg" alt="">
+<img class="mid" src="assets/Screenshot%202026-09-01%20175449.png" alt="">
 <div id="page">
   <div class="bar">
     <h1 class="title" style="font-size:12px">horses - Microsoft Internet Explorer</h1>
@@ -228,7 +229,7 @@
 <div class="fx right" aria-hidden="true"></div>
 <script>
 // banners + glitch effect over the two horse-photo margins: banners laid out over the photo, then shifted photo slices, blurred blocks,
-// translucent blurry "horse" lettering (sometimes split over lines), grain and scratches
+// translucent blurry "NOCOM" lettering (sometimes split over lines), grain and scratches
 (function () {
   const rnd = (a, b) => a + Math.random() * (b - a);
   const TINTS = ['rgba(225,240,245,.40)', 'rgba(200,225,235,.34)', 'rgba(40,80,200,.26)', 'rgba(10,20,40,.26)', 'rgba(255,255,255,.45)'];
@@ -325,13 +326,13 @@
           backgroundSize: W + 'px ' + H + 'px', backgroundPosition: (-x + dx) + 'px ' + (-y + dy) + 'px' });
       });
 
-      // translucent, slightly blurry "horse" that sometimes breaks across lines (hor / se ...)
-      const SPLITS = ['hor\nse', 'ho\nrse', 'h\norse', 'hors\ne', 'ho\nrs\ne'];
+      // translucent, slightly blurry "NOCOM" that sometimes breaks across lines (NOC / OM ...)
+      const SPLITS = ['NOC\nOM', 'NO\nCOM', 'N\nOCOM', 'NOCO\nM', 'NO\nCO\nM'];
       add('word', 7, el => {
         const r = Math.random(), split = Math.random() < .35;
-        el.textContent = split ? SPLITS[Math.floor(rnd(0, SPLITS.length))] : 'horse';
+        el.textContent = split ? SPLITS[Math.floor(rnd(0, SPLITS.length))] : 'NOCOM';
         el.className = 'word' + (r < .22 ? ' outline' : r < .42 ? ' soft' : r < .66 ? ' dark' : r < .82 ? ' blue' : '');
-        const fs = rnd(40, Math.max(56, Math.min(W * .55, 150))) * (split ? 1.35 : 1);
+        const fs = rnd(40, Math.max(56, Math.min(W * .45, 130))) * (split ? 1.35 : 1);
         el.style.fontSize = fs + 'px';
         el.style.left = rnd(-.15 * W, .5 * W) + 'px'; el.style.top = rnd(-.05 * H, H - fs) + 'px';
       });
