@@ -71,12 +71,6 @@
   .friends { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; text-align: center; padding: 8px; }
   .friends img { width: 80px; height: 80px; object-fit: cover; background: #fff; display: block; margin: 2px auto 0; }
 
-  /* horse emoji scattered over the page, under the margin banners */
-  .overlay-sticker {
-    position: absolute; pointer-events: none; line-height: 1; opacity: .8; z-index: 4;
-    font-family: "Segoe UI Emoji", "Apple Color Emoji", "Noto Color Emoji", sans-serif;
-  }
-
   /* retro web-button banners overlaid on the page */
   .ob {
     position: absolute; pointer-events: none;
@@ -229,37 +223,6 @@
 </div>
 </div>
 
-<script>
-// horse emoji scattered over the page
-(function () {
-  const doc = document.documentElement;
-  const rnd = (a, b) => a + Math.random() * (b - a);
-  // static horse emoji (stable positions) sitting under the margin banners
-  let seed = 7; const srnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
-  function stickers(w, h) {
-    document.querySelectorAll('.overlay-sticker').forEach(e => e.remove());
-    seed = 7;
-    const n = Math.round((w * h) / 45000);
-    for (let i = 0; i < n; i++) {
-      const img = document.createElement('span');
-      img.textContent = srnd() < .5 ? '🐴' : '🐎'; img.className = 'overlay-sticker';
-      const size = 24 + srnd() * 26;
-      img.style.fontSize = size + 'px';
-      img.style.left = (srnd() * (w - size)) + 'px';
-      img.style.top = (srnd() * (h - size)) + 'px';
-      img.style.transform = 'rotate(' + (srnd() * 60 - 30).toFixed(0) + 'deg)';
-      document.body.appendChild(img);
-    }
-  }
-
-  function place() {
-    const w = doc.scrollWidth, h = Math.max(doc.scrollHeight, innerHeight);
-    stickers(w, h);
-  }
-  addEventListener('load', place);
-  let t; addEventListener('resize', () => { clearTimeout(t); t = setTimeout(place, 200); });
-})();
-</script>
 <div class="fx left" aria-hidden="true"></div>
 <div class="fx right" aria-hidden="true"></div>
 <script>
@@ -288,7 +251,7 @@
     ['script',    'do you want to hug?<br>' + d('˚ ₊ ⋆ ✧ ⋆ ₊ ˚')],
     ['pastel',    d('⋆˚✿˖°') + ' forget to index ' + d('°˖✿˚⋆')],
     ['blackred blink', 'CLICK to be <span style="color:#fff">darling!</span>'],
-    ['blue',      '100% <u>genuine</u> ' + d('🐎')],
+    ['blue',      '100% <u>genuine</u> '],
     ['pinkdash',  d('✦') + ' this user creates ' + d('✦')],
     ['glow',      d('✧') + ' I love my <u>poetic computer</u> ' + d('✧')],
     ['pinkfill',  d('🎀') + ' my ambient girl ' + d('🌸')],
