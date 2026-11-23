@@ -23,16 +23,17 @@
 
   /* main section: translucent steel-blue console over the background image */
   /* the photo sits behind everything; the console covers all but a narrow ring around the edges */
-  /* three stretched sections: left strip, middle (behind the console), right strip */
+  /* background: three equal stretched sections, full height */
   .mid, .side { position: fixed; top: 0; height: 100vh; object-fit: fill; z-index: 0; pointer-events: none; }
-  .mid { left: var(--m); right: var(--m); width: auto; }
-  .side { width: var(--m); }
+  .side { width: 33.34%; }
   .side.left { left: 0; }
+  .mid { left: 33.33%; width: 33.34%; }
   .side.right { right: 0; }
-  body { padding: var(--m); }   /* equal gap on all four sides, top and bottom included */
-  #wrap { position: relative; z-index: 2; width: 100%; margin: 0; min-height: calc(100vh - 2 * var(--m)); }
+  #wrap { position: fixed; z-index: 2; left: 50%; top: 50%; transform: translate(-50%, -50%);
+          width: clamp(740px, 64vw, 1500px); height: clamp(440px, 58vh, 920px); max-width: 94vw; max-height: 92vh; }
   #page {
-    width: 100%; margin: 0; padding: 12px 14px 20px; min-height: calc(100vh - 2 * var(--m)); position: relative; z-index: 1;
+    width: 100%; height: 100%; margin: 0; padding: 12px 14px 20px; position: relative; z-index: 1;
+    overflow-y: auto; scrollbar-width: thin; scrollbar-color: #5a5a60 transparent;
     background:
       repeating-linear-gradient(0deg, rgba(255,255,255,.14) 0 1px, transparent 1px 3px),
       linear-gradient(160deg, rgba(224,231,245,.88), rgba(132,148,184,.86));
@@ -105,7 +106,7 @@
 
   @media (max-width: 1100px) { .main { grid-template-columns: 1fr; } }
   @media (max-width: 720px) {
-    :root { --m: 16px; }
+    #wrap { width: 94vw; height: 90vh; }
     .cols { grid-template-columns: 1fr; }
     .vision .wb { grid-template-columns: 1fr; }
     .divider { display: none; }
@@ -388,13 +389,13 @@ if (document.documentElement.classList.contains('andrew'))
       // layout(box.firstChild, W, H, side * 11);
       // positions that overlap the narrow ring around the console (left, right, top or bottom strip)
       const wr = document.getElementById('wrap').getBoundingClientRect();
-      const M = Math.max(10, (innerWidth - wr.width) / 2);
+      const Mx = Math.max(20, wr.left), My = Math.max(20, wr.top);
       const ring = (w, h) => {
         const side = Math.floor(rnd(0, 4));
-        if (side === 0) return [rnd(-w + .4 * M, .6 * M), rnd(-.05 * H, H - h * .5)];
-        if (side === 1) return [rnd(W - 1.2 * M, W - .4 * M), rnd(-.05 * H, H - h * .5)];
-        if (side === 2) return [rnd(-.15 * W, .9 * W), rnd(-h + .4 * M, .6 * M)];
-        return [rnd(-.15 * W, .9 * W), rnd(H - 1.2 * M, H - .4 * M)];
+        if (side === 0) return [rnd(-.3 * w, .8 * Mx), rnd(-.05 * H, H - h * .5)];
+        if (side === 1) return [rnd(W - Mx - .8 * w, W - .3 * Mx), rnd(-.05 * H, H - h * .5)];
+        if (side === 2) return [rnd(-.15 * W, .9 * W), rnd(-.3 * h, .8 * My)];
+        return [rnd(-.15 * W, .9 * W), rnd(H - My, H - .3 * h)];
       };
       const add = (cls, n, move) => { for (let i = 0; i < n; i++) {
         const el = document.createElement('div'); el.className = cls; box.appendChild(el);
