@@ -20,10 +20,10 @@
   a:hover { text-decoration: underline; }
 
   /* main section: nearly transparent background, with another last-straw photo stretched behind it */
-  #wrap { position: relative; z-index: 2; width: 740px; max-width: 100%; margin: 16px auto; }
+  #wrap { position: relative; z-index: 2; width: 740px; max-width: 100%; margin: 0 auto; min-height: 100vh; }
   #wrap .mid { position: fixed; top: 0; left: 50%; transform: translateX(-50%); width: min(740px, 100vw); height: 100vh; object-fit: fill; z-index: 0; pointer-events: none; }
   #page {
-    width: 100%; margin: 0; padding: 8px;
+    width: 100%; margin: 0; padding: 16px 8px 8px; min-height: 100vh;
     background: rgba(11, 122, 120, .95); position: relative; z-index: 1;
   }
   .panel, .bar {
