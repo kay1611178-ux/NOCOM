@@ -1,0 +1,25 @@
+name: Update image manifest
+on:
+  push:
+    paths: ['static/**']
+    branches: [main]
+permissions:
+  contents: write
+jobs:
+  manifest:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build images.json
+        run: |
+          python3 - <<'PY'
+          import os, json, re
+          names = sorted(f for f in os.listdir('static') if re.search(r'\.(png|jpe?g|gif|webp|avif|svg|bmp)$', f, re.I))
+          json.dump(names, open('images.json', 'w'), indent=2)
+          PY
+      - name: Commit
+        run: |
+          git config user.name "github-actions"
+          git config user.email "actions@github.com"
+          git add images.json
+          git diff --cached --quiet || (git commit -m "Update images.json" && git push)
