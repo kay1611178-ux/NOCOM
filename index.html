@@ -3,6 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" type="image/png" href="assets/favicon.png">
 <title>I like horses</title>
 <style>
   :root {
@@ -19,7 +20,7 @@
   a { color: var(--link); font-weight: bold; text-decoration: none; }
   a:hover { text-decoration: underline; }
 
-  /* main section: nearly transparent background, with the jellyfish image stretched behind it */
+  /* main section: nearly transparent background, with the background image stretched behind it */
   #wrap { position: relative; z-index: 2; width: 740px; max-width: 100%; margin: 0 auto; min-height: 100vh; }
   #wrap .mid { position: fixed; top: 0; left: 50%; transform: translateX(-50%); width: min(740px, 100vw); height: 100vh; object-fit: fill; z-index: 0; pointer-events: none; }
   #page {
@@ -127,7 +128,12 @@
   .fx .blk { position: absolute; overflow: hidden; }
   .fx .blk, .fx .word { opacity: 0; transition: opacity .7s ease-in-out; }
   .fx .blk.tint  { backdrop-filter: blur(3px) saturate(.7) brightness(1.15); }
+  /* rare smog pull: one continuous photo across left margin, main section and right margin */
+  html.rare .side, html.rare .mid { display: none; }
+  #rare { position: fixed; inset: 0; width: 100vw; height: 100vh; object-fit: fill; z-index: 0; pointer-events: none; }
   .fx .blk.slice { background-image: url("assets/jellyfish.jpg"); filter: hue-rotate(60deg) saturate(.6) contrast(1.15) brightness(1.2); }
+  html.rare .fx .blk.slice { background-image: var(--rare-url); }
+  html.andrew .fx .blk.slice { background-image: url("assets/last-straw.jpg"); }
   .fx .word { position: absolute; white-space: pre; line-height: .95; font-family: Arial, Helvetica, sans-serif;
               color: rgba(255,255,255,.5); mix-blend-mode: screen; filter: blur(1.5px); }
   .fx .word.outline { color: transparent; -webkit-text-stroke: 2px rgba(255,255,255,.8); }
@@ -143,11 +149,33 @@
 </head>
 <body>
 
+<script>
+// rare background pulls. Normally the jellyfish image fills all three sections.
+// RARE_CHANCE of loads instead get one of three rare pulls (equal odds between them):
+//   - "andrew": the last-straw photo in each section (original configuration)
+//   - one of two smog photos stretched as a single continuous image across all three sections
+(function () {
+  var RARE_CHANCE = 0.001;
+  if (Math.random() >= RARE_CHANCE) return;
+  var pull = Math.floor(Math.random() * 3);
+  if (pull === 0) { document.documentElement.classList.add('andrew'); return; }
+  var src = pull === 1 ? 'assets/smog-beijing.jpg' : 'assets/smog-shanghai.jpg';
+  document.documentElement.classList.add('rare');
+  document.documentElement.style.setProperty('--rare-url', 'url("' + src + '")');
+  var i = document.createElement('img'); i.id = 'rare'; i.src = src; i.alt = '';
+  document.body.insertBefore(i, document.body.firstChild);
+})();
+</script>
 <img class="side left" src="assets/jellyfish.jpg" alt="">
 <img class="side right" src="assets/jellyfish.jpg" alt="">
 
 <div id="wrap">
 <img class="mid" src="assets/jellyfish.jpg" alt="">
+<script>
+// "andrew" rare pull: swap the three section images to the last-straw photo before anything is painted
+if (document.documentElement.classList.contains('andrew'))
+  document.querySelectorAll('.side, .mid').forEach(function (i) { i.src = 'assets/last-straw.jpg'; });
+</script>
 <div id="page">
   <div class="bar">
     <h1 class="title" style="font-size:12px">horses - Microsoft Internet Explorer</h1>
@@ -323,8 +351,11 @@
       add('blk slice', 8, el => {
         const w = rnd(.3 * W, W * 1.1), h = rnd(12, .14 * H), x = rnd(-.1 * W, .7 * W), y = rnd(0, H - h);
         const dx = rnd(-.45 * W, .45 * W), dy = rnd(-20, 20);
+        // in rare mode the photo spans the whole viewport, so slices must sample from the matching spot
+        const rare = document.documentElement.classList.contains('rare');
+        const bx = rare ? box.getBoundingClientRect().left : 0, bw = rare ? innerWidth : W;
         Object.assign(el.style, { left: x + 'px', top: y + 'px', width: w + 'px', height: h + 'px',
-          backgroundSize: W + 'px ' + H + 'px', backgroundPosition: (-x + dx) + 'px ' + (-y + dy) + 'px' });
+          backgroundSize: bw + 'px ' + H + 'px', backgroundPosition: (-(x + bx) + dx) + 'px ' + (-y + dy) + 'px' });
       });
 
       // translucent, slightly blurry "NOCOM" that sometimes breaks across lines (NOC / OM ...)
