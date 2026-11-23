@@ -28,17 +28,17 @@
   .side { width: 33.34%; }
   .side.left { left: 0; }
   .mid { left: 33.33%; width: 33.34%; }
-  /* centre section only: sits in front of the jellyfish, behind everything else */
-  .mid2 { position: fixed; top: 0; left: 33.33%; width: 33.34%; height: 100vh; object-fit: fill; z-index: 0; pointer-events: none; }
   .side.right { right: 0; }
   #wrap { position: fixed; z-index: 2; left: 50%; top: 50%; transform: translate(-50%, -50%);
           width: clamp(740px, 72.3vw, 1700px); height: clamp(440px, 75.6vh, 1000px); max-width: 94vw; max-height: 92vh; }
+  /* forest backdrop of the window itself: in front of the jellyfish, behind all the window content */
+  .wbg { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: fill; z-index: 0; pointer-events: none; }
   #page {
     width: 100%; height: 100%; margin: 0; padding: 12px 14px 20px; position: relative; z-index: 1;
     overflow-y: auto; scrollbar-width: thin; scrollbar-color: #5a5a60 transparent;
     background:
       repeating-linear-gradient(0deg, rgba(255,255,255,.14) 0 1px, transparent 1px 3px),
-      linear-gradient(160deg, rgba(224,231,245,.88), rgba(132,148,184,.86));
+      linear-gradient(160deg, rgba(224,231,245,.22), rgba(132,148,184,.30));
     box-shadow: 0 0 0 1px rgba(20,20,30,.55), 0 0 40px rgba(0,0,20,.35);
   }
 
@@ -170,7 +170,7 @@
   .fx .blk, .fx .word { opacity: 0; transition: opacity .7s ease-in-out; }
   .fx .blk.tint  { backdrop-filter: blur(3px) saturate(.7) brightness(1.15); }
   /* rare smog pull: one continuous photo across left margin, main section and right margin */
-  html.rare .side, html.rare .mid, html.rare .mid2, html.andrew .mid2 { display: none; }
+  html.rare .side, html.rare .mid, html.rare .wbg, html.andrew .wbg { display: none; }
   #rare { position: fixed; inset: 0; width: 100vw; height: 100vh; object-fit: fill; z-index: 0; pointer-events: none; }
   .fx .blk.slice { background-image: url("assets/jellyfish.jpg"); filter: hue-rotate(60deg) saturate(.6) contrast(1.15) brightness(1.2); }
   html.rare .fx .blk.slice { background-image: var(--rare-url); }
@@ -211,10 +211,10 @@
 </script>
 <img class="side left" src="assets/jellyfish.jpg" alt="">
 <img class="mid" src="assets/jellyfish.jpg" alt="">
-<img class="mid2" src="assets/forest.jpg" alt="">
 <img class="side right" src="assets/jellyfish.jpg" alt="">
 
 <div id="wrap">
+<img class="wbg" src="assets/forest.jpg" alt="">
 <script>
 // "andrew" rare pull: swap the three section images to the last-straw photo before anything is painted
 if (document.documentElement.classList.contains('andrew'))
