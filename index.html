@@ -8,38 +8,29 @@
 <style>
   :root {
     --teal: #d2386b;
-    --panel: #b9b1a4;
-    --ink: #111;
-    --link: #1a1aa6;
-    --bar1: #1d2b6b;
-    --bar2: #aab6d8;
+    --ink: #1b2340;
+    --metal: #7b7b80;
+    --metal-d: #3a3a40;
+    --blue: #1d3a8c;
   }
   * { box-sizing: border-box; }
   html, body { margin: 0; min-height: 100%; background: var(--teal); }
-  body { font: 13px/1.35 Verdana, Tahoma, Arial, sans-serif; color: var(--ink); position: relative; overflow-x: hidden; }
-  a { color: var(--link); font-weight: bold; text-decoration: none; }
+  body { font: 10px/1.7 "Trebuchet MS", Verdana, Arial, sans-serif; color: var(--ink); position: relative; overflow-x: hidden;
+         letter-spacing: .14em; text-transform: uppercase; }
+  a { color: inherit; text-decoration: none; }
   a:hover { text-decoration: underline; }
 
-  /* main section: nearly transparent background, with the background image stretched behind it */
+  /* main section: translucent steel-blue console over the background image */
   #wrap { position: relative; z-index: 2; width: 740px; max-width: 100%; margin: 0 auto; min-height: 100vh; }
   #wrap .mid { position: fixed; top: 0; left: 50%; transform: translateX(-50%); width: min(740px, 100vw); height: 100vh; object-fit: fill; z-index: 0; pointer-events: none; }
   #page {
-    width: 100%; margin: 0; padding: 16px 8px 8px; min-height: 100vh;
-    background: rgba(210, 56, 107, .85); position: relative; z-index: 1;
-  }
-  .panel, .bar {
+    width: 100%; margin: 0; padding: 12px 14px 20px; min-height: 100vh; position: relative; z-index: 1;
     background:
-      repeating-linear-gradient(0deg, rgba(0,0,0,.05) 0 1px, transparent 1px 3px),
-      var(--panel);
-    border: 2px solid #ece7dc; border-right-color: #6f685c; border-bottom-color: #6f685c;
+      repeating-linear-gradient(0deg, rgba(255,255,255,.14) 0 1px, transparent 1px 3px),
+      linear-gradient(160deg, rgba(224,231,245,.88), rgba(132,148,184,.86));
   }
-  .title {
-    margin: 0; padding: 2px 6px; color: #fff; font-size: 12px; font-weight: bold;
-    background: linear-gradient(90deg, var(--bar1), var(--bar2));
-  }
-  .bar { padding: 0; margin-bottom: 10px; }
 
-  /* horse photo filling the left and right margins beside the main content */
+  /* photo filling the left and right margins beside the main content */
   .side {
     position: fixed; top: 0; bottom: 0; z-index: 0;
     width: max(0px, calc(50vw - 370px)); height: 100vh;
@@ -47,30 +38,76 @@
   }
   .side.left { left: 0; }
   .side.right { right: 0; }
-  .bar nav { display: flex; flex-wrap: wrap; gap: 2px 0; padding: 4px 6px; font-size: 11px; }
-  .bar nav a { color: #000; padding: 0 8px; border-left: 1px solid #6f685c; }
-  .bar nav a:first-child { border-left: 0; }
 
-  .cols { display: grid; grid-template-columns: 280px 1fr; gap: 10px; align-items: start; }
-  .col { display: grid; gap: 10px; }
-  .panel .body { padding: 6px 8px; }
-  .panel { margin: 0; }
+  /* ---- y2k console chrome ---- */
+  .chrome { height: 14px; position: relative; margin-bottom: 8px; border: 1px solid #222;
+            background: repeating-linear-gradient(90deg, #55555a 0 2px, #727277 2px 4px); }
+  .chrome::after { content: ''; position: absolute; right: 6px; top: 3px; width: 6px; height: 6px; background: #e4e4e8;
+                   box-shadow: 9px 0 #e4e4e8, 18px 0 #a9a9ae; }
+  .chrome.bot { margin: 14px 0 0; }
 
-  .profile { display: flex; gap: 10px; padding: 6px; }
-  .profile img { width: 130px; height: 130px; object-fit: cover; object-position: 30% 42%; border: 1px solid #000; background: #fff; }
-  .profile .quote { font-size: 12px; }
-  .online { display: inline-block; margin-top: 6px; padding: 0 5px; background: #fff; border: 1px solid #777; border-radius: 4px; font-size: 11px; }
+  .hd { display: flex; align-items: center; gap: 14px; padding: 8px 6px 10px; }
+  .emblem { width: 50px; height: 28px; border: 3px solid var(--blue); border-radius: 50%; position: relative; background: #eef1fa; flex: none; }
+  .emblem::after { content: ''; position: absolute; left: 50%; top: -6px; width: 6px; height: 34px; margin-left: -3px; background: #2f8f55; border: 1px solid #1d3a8c; }
+  .hd .vr { width: 1px; align-self: stretch; background: #1b2340; opacity: .6; }
+  .hd b { display: block; font: 300 22px/1 "Trebuchet MS", Verdana, sans-serif; letter-spacing: .35em; color: #1b2340; }
+  .hd small { display: block; margin-top: 4px; font-size: 8px; letter-spacing: .22em; color: var(--blue); font-weight: bold; }
 
-  .links { display: grid; grid-template-columns: 1fr 1fr; gap: 8px 6px; padding: 8px; }
-  table.interests { width: 100%; border-collapse: collapse; }
-  table.interests td { padding: 5px 8px; vertical-align: top; border-top: 1px solid #8a8376; }
-  table.interests td:first-child { width: 70px; }
-  .blue { color: #3a3acb; }
-  .center { text-align: center; padding: 18px 8px; }
-  .hot { color: #c00; font-weight: bold; }
+  .strip { display: flex; flex-wrap: wrap; gap: 4px 12px; align-items: center; padding: 4px 10px; margin-bottom: 14px; font-size: 9px;
+           background: linear-gradient(#d9d9dd, #9b9ba1); border: 1px solid #333; color: #222; }
+  .strip .here { margin-left: auto; color: #3a3a50; }
+  .strip span.dot { opacity: .6; }
 
-  .friends { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; text-align: center; padding: 8px; }
-  .friends img { width: 80px; height: 80px; object-fit: cover; background: #fff; display: block; margin: 2px auto 0; }
+  .cols { display: grid; grid-template-columns: 150px 1fr; gap: 14px; align-items: start; }
+  .main { display: grid; gap: 14px; }
+
+  .win { position: relative; border: 1px solid #25252b; box-shadow: inset 0 0 0 1px rgba(255,255,255,.55), 3px 3px 0 rgba(0,0,0,.18);
+         background: rgba(96,112,150,.55); color: #f4f7ff; text-shadow: 0 0 2px rgba(0,0,0,.35);
+         clip-path: polygon(9px 0, 100% 0, 100% 100%, 0 100%, 0 9px); }
+  .wt { display: flex; align-items: center; gap: 8px; height: 17px; padding: 0 5px 0 12px; font-size: 8px; letter-spacing: .3em; color: #1a1a1f; text-shadow: none;
+        background: linear-gradient(#d4d4d8, #86868c); border-bottom: 1px solid #25252b; }
+  .wt .dots { flex: 1; height: 7px; background: radial-gradient(circle, #4a4a50 1px, transparent 1.3px) 0 0 / 4px 4px; }
+  .wc { display: flex; gap: 3px; }
+  .wc i { width: 10px; height: 10px; border: 1px solid #222; background: #dcdce0; font-style: normal; font-size: 9px; line-height: 7px; text-align: center; }
+  .wc i:first-child::before { content: '-'; }
+  .wc i:last-child::before { content: 'x'; font-size: 8px; }
+  .wb { padding: 14px 16px; font-size: 9.5px; line-height: 1.9; letter-spacing: .13em; }
+  .wf { height: 10px; border-top: 1px solid #25252b; background: repeating-linear-gradient(90deg, #5a5a60 0 2px, #77777c 2px 4px); }
+
+  .mini { background: #cfd1d7; color: #14141a; text-shadow: none; }
+  .menu { list-style: none; margin: 0; padding: 14px 12px 12px; display: grid; gap: 8px; text-align: center; font-weight: bold; font-size: 9px; }
+  .menu a { display: block; padding: 1px 0; }
+  .menu a:hover { background: #14141a; color: #f0f3ff; text-decoration: none; }
+
+  .vision .wb { display: grid; grid-template-columns: 150px 1px 1fr; gap: 16px; align-items: start; }
+  .shot { position: relative; border: 1px solid #25252b; background: #fff; }
+  .shot img { display: block; width: 100%; height: 190px; object-fit: cover; object-position: 30% 42%; filter: saturate(.9) contrast(1.05); }
+  .shot::after { content: ''; position: absolute; inset: 0; pointer-events: none; background: repeating-linear-gradient(0deg, rgba(0,0,0,.14) 0 1px, transparent 1px 3px); }
+  .divider { width: 1px; align-self: stretch; background: rgba(255,255,255,.5); }
+  .headline { text-align: right; font: 17px/1.1 "Trebuchet MS", Verdana, sans-serif; letter-spacing: .04em; text-transform: none; color: #fff; margin: 0 0 10px; }
+  .headline em { font-style: normal; color: #dbe6ff; letter-spacing: .14em; text-transform: uppercase; display: block; font-size: 19px; }
+  .arrow { float: left; width: 16px; height: 16px; margin: 2px 8px 0 0; border-radius: 50%; border: 2px solid #eef; position: relative; }
+  .arrow::after { content: ''; position: absolute; left: 3px; top: 2px; border-left: 5px solid #eef; border-top: 4px solid transparent; border-bottom: 4px solid transparent; }
+  .vision p { margin: 0 0 10px; }
+  .btn { display: inline-block; margin-top: 4px; padding: 2px 10px; border: 1px solid #25252b; background: linear-gradient(#e2e2e6, #9a9aa0); color: #14141a; text-shadow: none; font-weight: bold; font-size: 9px; }
+  .btn:hover { background: #14141a; color: #f0f3ff; text-decoration: none; }
+
+  .win p { margin: 0 0 10px; }
+  .win .k { color: #dbe6ff; font-weight: bold; }
+  table.int { width: 100%; border-collapse: collapse; }
+  table.int td { padding: 5px 8px; vertical-align: top; border-top: 1px solid rgba(255,255,255,.35); }
+  table.int tr:first-child td { border-top: 0; }
+  table.int td:first-child { width: 80px; color: #dbe6ff; font-weight: bold; }
+  .links { display: grid; grid-template-columns: 1fr 1fr; gap: 8px 12px; }
+  .links a::before { content: '>> '; opacity: .7; }
+  .hot { color: #ffd0de; font-weight: bold; }
+
+  @media (max-width: 720px) {
+    .cols { grid-template-columns: 1fr; }
+    .vision .wb { grid-template-columns: 1fr; }
+    .divider { display: none; }
+    .shot img { height: 220px; }
+  }
 
   /* retro web-button banners overlaid on the page */
   .ob {
@@ -177,79 +214,91 @@ if (document.documentElement.classList.contains('andrew'))
   document.querySelectorAll('.side, .mid').forEach(function (i) { i.src = 'assets/last-straw.jpg'; });
 </script>
 <div id="page">
-  <div class="bar">
-    <h1 class="title" style="font-size:12px">horses - Microsoft Internet Explorer</h1>
-    <nav>
-      <a href="index.html">Home</a>
-      <a href="stickers.html">Stickers</a>
-      <a href="#about">About</a>
-      <a href="#interests">Interests</a>
-      <a href="#friends">Friends</a>
-    </nav>
-  </div>
+  <div class="chrome"></div>
+
+  <header class="hd">
+    <span class="emblem"></span>
+    <span class="vr"></span>
+    <div><b>NOCOM</b><small>HORSES THROUGH TECHNOLOGY</small></div>
+  </header>
+
+  <nav class="strip">
+    <a href="index.html">Home</a><span class="dot">&middot;</span>
+    <a href="stickers.html">Stickers</a><span class="dot">&middot;</span>
+    <a href="#about">About</a><span class="dot">&middot;</span>
+    <a href="#friends">Friends</a>
+    <span class="here">// Welcome to NOCOM</span>
+  </nav>
 
   <div class="cols">
-    <div class="col">
-      <div class="panel"><h2 class="title">Horse Lover</h2></div>
+    <aside class="win mini">
+      <div class="wt"><span class="dots"></span><span class="wc"><i></i><i></i></span></div>
+      <ul class="menu">
+        <li><a href="index.html">Vision</a></li>
+        <li><a href="#about">Profile</a></li>
+        <li><a href="stickers.html">Stickers</a></li>
+        <li><a href="#interests">Interests</a></li>
+        <li><a href="#friends">Friends</a></li>
+        <li><a href="#contact">Contact</a></li>
+      </ul>
+      <div class="wf"></div>
+    </aside>
 
-      <div class="panel profile">
-        <img src="assets/pfp.jpg" alt="profile picture">
-        <div>
-          <div class="quote">"neigh"</div>
-          <span class="online">ONLINE</span>
+    <div class="main">
+      <section class="win vision">
+        <div class="wt"><span>.// Vision</span><span class="dots"></span><span class="wc"><i></i><i></i></span></div>
+        <div class="wb">
+          <div class="shot"><img src="assets/pfp.jpg" alt="profile picture"></div>
+          <span class="divider"></span>
+          <div>
+            <p class="headline"><span class="arrow"></span>en<b style="font-weight:400">HORSE</b> the<em>Future.</em></p>
+            <p>Lorem ipsum dolor sit amet, I like horses consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+            <p>Horses ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo horses consequat.</p>
+            <a class="btn" href="stickers.html">[ View stickers ]</a>
+          </div>
         </div>
-      </div>
+        <div class="wf"></div>
+      </section>
 
-      <div class="panel">
-        <h2 class="title">Mood</h2>
-        <div class="body"><b>Mood:</b> <span class="blue">gallop-y</span><br><br>
-          View my: <a href="stickers.html">Stickers</a> | <a href="#about">Blurbs</a></div>
-      </div>
-
-      <div class="panel">
-        <h2 class="title">Contacting Horse Lover</h2>
-        <div class="links">
-          <a href="stickers.html">Add to Friends</a>
-          <a href="stickers.html">Add to Favorites</a>
-          <a href="stickers.html">Send Message</a>
-          <a href="stickers.html">Forward to Friend</a>
+      <section class="win" id="about">
+        <div class="wt"><span>.// About</span><span class="dots"></span><span class="wc"><i></i><i></i></span></div>
+        <div class="wb">
+          <p><span class="k">About me:</span><br>Lorem ipsum dolor sit amet, I like horses consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+          <p id="friends"><span class="k">Who I'd like to meet:</span><br>Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore horses eu fugiat nulla pariatur. Other horse people, excepteur sint occaecat cupidatat non proident.</p>
+          <p style="margin:0"><span class="k">Mood:</span> gallop-y &nbsp;&middot;&nbsp; <span class="k">Status:</span> online</p>
         </div>
-      </div>
+        <div class="wf"></div>
+      </section>
 
-      <div class="panel" id="interests">
-        <h2 class="title">Horse Lover's Interests</h2>
-        <table class="interests">
-          <tr><td>General</td><td class="blue">Lorem ipsum dolor sit amet, horses consectetur adipiscing elit, sed do eiusmod tempor.</td></tr>
-          <tr><td>Music</td><td class="blue">Hoofbeats, ut labore et dolore magna aliqua, more hoofbeats.</td></tr>
-          <tr><td>Heroes</td><td class="blue">Every horse, ut enim ad minim veniam.</td></tr>
-        </table>
-      </div>
-    </div>
-
-    <div class="col">
-      <div class="panel center" style="padding:30px 8px"><a href="stickers.html">Check out my stickers</a></div>
-
-      <div class="panel" id="about">
-        <h2 class="title">Horse Lover's Blurbs</h2>
-        <div class="body">
-          <b>About me:</b>
-          <p class="blue">Lorem ipsum dolor sit amet, I like horses consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Horses ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo horses consequat.</p>
-          <b>Who I'd like to meet:</b>
-          <p class="blue">Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore horses eu fugiat nulla pariatur. Other horse people, excepteur sint occaecat cupidatat non proident.</p>
+      <section class="win" id="interests">
+        <div class="wt"><span>.// Interests</span><span class="dots"></span><span class="wc"><i></i><i></i></span></div>
+        <div class="wb" style="padding:6px 8px">
+          <table class="int">
+            <tr><td>General</td><td>Lorem ipsum dolor sit amet, horses consectetur adipiscing elit, sed do eiusmod tempor.</td></tr>
+            <tr><td>Music</td><td>Hoofbeats, ut labore et dolore magna aliqua, more hoofbeats.</td></tr>
+            <tr><td>Heroes</td><td>Every horse, ut enim ad minim veniam.</td></tr>
+          </table>
         </div>
-      </div>
+        <div class="wf"></div>
+      </section>
 
-      <div class="panel" id="friends">
-        <h2 class="title">Horse Lover's Friend Space</h2>
-        <div class="body">Horse Lover has <span class="hot">many</span> friends. Lorem ipsum, they are all horses.</div>
-      </div>
-
-      <div class="panel">
-        <h2 class="title">Horse Lover's Friends Comments</h2>
-        <div class="body"><b>Displaying <span class="hot">0</span> of <span class="hot">0</span> comments</b> ( <a href="stickers.html">View all</a> | <a href="stickers.html">Add Comment</a> )</div>
-      </div>
+      <section class="win" id="contact">
+        <div class="wt"><span>.// Contact</span><span class="dots"></span><span class="wc"><i></i><i></i></span></div>
+        <div class="wb">
+          <div class="links">
+            <a href="stickers.html">Add to friends</a>
+            <a href="stickers.html">Add to favorites</a>
+            <a href="stickers.html">Send message</a>
+            <a href="stickers.html">Forward to friend</a>
+          </div>
+          <p style="margin:12px 0 0">Displaying <span class="hot">0</span> of <span class="hot">0</span> comments &nbsp;[ <a href="stickers.html">view all</a> | <a href="stickers.html">add comment</a> ]</p>
+        </div>
+        <div class="wf"></div>
+      </section>
     </div>
   </div>
+
+  <div class="chrome bot"></div>
 </div>
 </div>
 
