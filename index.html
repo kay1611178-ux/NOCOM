@@ -24,7 +24,7 @@
   #wrap .mid { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: fill; z-index: 0; pointer-events: none; }
   #page {
     width: 100%; margin: 0; padding: 8px;
-    background: rgba(11, 122, 120, .05); position: relative; z-index: 1;
+    background: rgba(11, 122, 120, .14); position: relative; z-index: 1;
   }
   .panel, .bar {
     background:
@@ -56,7 +56,7 @@
   .panel { margin: 0; }
 
   .profile { display: flex; gap: 10px; padding: 6px; }
-  .profile img { width: 130px; height: 130px; object-fit: cover; border: 1px solid #000; background: #fff; }
+  .profile img { width: 130px; height: 130px; object-fit: contain; border: 1px solid #000; background: #fff; }
   .profile .quote { font-size: 12px; }
   .online { display: inline-block; margin-top: 6px; padding: 0 5px; background: #fff; border: 1px solid #777; border-radius: 4px; font-size: 11px; }
 
@@ -71,10 +71,10 @@
   .friends { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; text-align: center; padding: 8px; }
   .friends img { width: 80px; height: 80px; object-fit: cover; background: #fff; display: block; margin: 2px auto 0; }
 
-  /* horse stickers scattered behind the banners */
+  /* horse emoji scattered over the page, under the margin banners */
   .overlay-sticker {
-    position: absolute; width: 56px; height: auto; pointer-events: none;
-    opacity: .55; mix-blend-mode: multiply; z-index: 4;
+    position: absolute; pointer-events: none; line-height: 1; opacity: .8; z-index: 4;
+    font-family: "Segoe UI Emoji", "Apple Color Emoji", "Noto Color Emoji", sans-serif;
   }
 
   /* retro web-button banners overlaid on the page */
@@ -124,7 +124,7 @@
   .fx { position: fixed; top: 0; bottom: 0; z-index: 5; pointer-events: none; overflow: hidden;
         width: max(0px, calc(50vw - 370px)); }
   .fx.left { left: 0; } .fx.right { right: 0; }
-  .fx .bn { position: absolute; inset: 0; }
+  .fx .bn { position: absolute; inset: 0; z-index: 3; }
   .fx .wash { position: absolute; inset: 0; mix-blend-mode: screen;
     background: linear-gradient(160deg, rgba(210,235,245,.28), rgba(30,70,190,.18)); }
   .fx .grain { position: absolute; inset: 0; opacity: .55; mix-blend-mode: overlay;
@@ -169,7 +169,7 @@
       <div class="panel"><h2 class="title">Horse Lover</h2></div>
 
       <div class="panel profile">
-        <img src="assets/profile.png" alt="profile picture">
+        <img src="assets/horse-sticker.png" alt="profile picture">
         <div>
           <div class="quote">"neigh"</div>
           <span class="online">ONLINE</span>
@@ -230,21 +230,21 @@
 </div>
 
 <script>
-// horse stickers scattered over the page
+// horse emoji scattered over the page
 (function () {
   const doc = document.documentElement;
   const rnd = (a, b) => a + Math.random() * (b - a);
-  // static horse stickers (stable positions) sitting behind the banners
+  // static horse emoji (stable positions) sitting under the margin banners
   let seed = 7; const srnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
   function stickers(w, h) {
     document.querySelectorAll('.overlay-sticker').forEach(e => e.remove());
     seed = 7;
     const n = Math.round((w * h) / 45000);
     for (let i = 0; i < n; i++) {
-      const img = new Image();
-      img.src = 'assets/horse-sticker.png'; img.alt = ''; img.className = 'overlay-sticker';
-      const size = 40 + srnd() * 40;
-      img.style.width = size + 'px';
+      const img = document.createElement('span');
+      img.textContent = srnd() < .5 ? '🐴' : '🐎'; img.className = 'overlay-sticker';
+      const size = 24 + srnd() * 26;
+      img.style.fontSize = size + 'px';
       img.style.left = (srnd() * (w - size)) + 'px';
       img.style.top = (srnd() * (h - size)) + 'px';
       img.style.transform = 'rotate(' + (srnd() * 60 - 30).toFixed(0) + 'deg)';
