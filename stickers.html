@@ -6,10 +6,47 @@
 <link rel="icon" type="image/png" href="assets/favicon.png">
 <title>NOCOM</title>
 <style>
-  html, body { margin: 0; min-height: 100%; background: #fff; }
+  html, body { margin: 0; min-height: 100%; background: #d2386b; }
+
+  /* background: three equal stretched sections, full height */
+  .mid, .side { position: fixed; top: 0; height: 100vh; object-fit: fill; z-index: 0; pointer-events: none; }
+  .side { width: 33.34%; }
+  .side.left { left: 0; }
+  .mid { left: 33.33%; width: 33.34%; }
+  .side.right { right: 0; }
+
+  /* glitch / photocopy effect, behind the stickers */
+  .fx { position: fixed; inset: 0; z-index: 1; pointer-events: none; overflow: hidden; }
+  .fx .bn { position: absolute; inset: 0; z-index: 3; }
+  .fx .bn .ob { opacity: .8; }
+  .fx .wash { position: absolute; inset: 0; mix-blend-mode: screen;
+    background: linear-gradient(160deg, rgba(210,235,245,.28), rgba(30,70,190,.18)); }
+  .fx .grain { position: absolute; inset: 0; opacity: .55; mix-blend-mode: overlay;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 .9 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>"); }
+  .fx .blk { position: absolute; overflow: hidden; }
+  .fx .blk, .fx .word { opacity: 0; transition: opacity .7s ease-in-out; }
+  .fx .blk.tint  { backdrop-filter: blur(3px) saturate(.7) brightness(1.15); }
+  /* rare smog pull: one continuous photo across left margin, main section and right margin */
+  html.rare .side, html.rare .mid { display: none; }
+  #rare { position: fixed; inset: 0; width: 100vw; height: 100vh; object-fit: fill; z-index: 0; pointer-events: none; }
+  .fx .blk.slice { background-image: url("assets/jellyfish.jpg"); filter: hue-rotate(60deg) saturate(.6) contrast(1.15) brightness(1.2); }
+  html.rare .fx .blk.slice { background-image: var(--rare-url); }
+  html.andrew .fx .blk.slice { background-image: url("assets/last-straw.jpg"); }
+  .fx .word { position: absolute; white-space: pre; line-height: .95; font-family: Arial, Helvetica, sans-serif;
+              color: rgba(255,255,255,.5); mix-blend-mode: screen; filter: blur(1.5px); }
+  .fx .word.outline { color: transparent; -webkit-text-stroke: 2px rgba(255,255,255,.8); }
+  .fx .word.soft { filter: blur(3px); color: rgba(210,235,255,.5); }
+  .fx .word.dark { color: rgba(8,14,40,.38); mix-blend-mode: multiply; }
+  .fx .word.blue { color: rgba(30,70,210,.32); mix-blend-mode: multiply; }
+  .fx .scratch { position: absolute; background: rgba(255,255,255,.5); }
+  .fx .scratch.h { height: 1px; left: 0; right: 0; }
+  .fx .scratch.v { width: 1px; top: 0; bottom: 0; background: rgba(255,255,255,.35); }
+
+
   #board {
     display: flex; flex-wrap: wrap; justify-content: center; align-items: center;
     gap: 1.5rem; padding: 3rem 2rem; box-sizing: border-box; min-height: 100vh;
+    position: relative; z-index: 2;
   }
   .sticker {
     width: clamp(110px, 16vw, 220px); height: auto; display: block;
@@ -22,6 +59,34 @@
 </style>
 </head>
 <body>
+<script>
+// rare background pulls. Normally the jellyfish image fills all three sections.
+// RARE_CHANCE of loads instead get one of three rare pulls (equal odds between them):
+//   - "andrew": the last-straw photo in each section (original configuration)
+//   - one of two smog photos stretched as a single continuous image across all three sections
+(function () {
+  var RARE_CHANCE = 0.001;
+  // testing: index.html#2696 forces a rare pull (random one); #2696.0 = andrew, #2696.1 = beijing smog, #2696.2 = shanghai smog
+  var forced = /^#2696(?:\.([012]))?$/.exec(location.hash);
+  if (!forced && Math.random() >= RARE_CHANCE) return;
+  var pull = forced && forced[1] !== undefined ? +forced[1] : Math.floor(Math.random() * 3);
+  if (pull === 0) { document.documentElement.classList.add('andrew'); return; }
+  var src = pull === 1 ? 'assets/smog-beijing.jpg' : 'assets/smog-shanghai.jpg';
+  document.documentElement.classList.add('rare');
+  document.documentElement.style.setProperty('--rare-url', 'url("' + src + '")');
+  var i = document.createElement('img'); i.id = 'rare'; i.src = src; i.alt = '';
+  document.body.insertBefore(i, document.body.firstChild);
+})();
+</script>
+<img class="side left" src="assets/jellyfish.jpg" alt="">
+<img class="mid" src="assets/jellyfish.jpg" alt="">
+<img class="side right" src="assets/jellyfish.jpg" alt="">
+<script>
+// "andrew" rare pull: swap the three section images to the last-straw photo before anything is painted
+if (document.documentElement.classList.contains('andrew'))
+  document.querySelectorAll('.side, .mid').forEach(function (i) { i.src = 'assets/last-straw.jpg'; });
+</script>
+<div class="fx" aria-hidden="true"></div>
 <div id="board"></div>
 <script>
 const EXT = /\.(png|jpe?g|gif|webp|avif|svg|bmp)$/i;
@@ -62,6 +127,142 @@ listImages().then(names => {
     board.appendChild(img);
   });
 });
+</script>
+<script>
+// banners + glitch effect over the two horse-photo margins: banners laid out over the photo, then shifted photo slices, blurred blocks,
+// translucent blurry "NOCOM" lettering (sometimes split over lines), grain and scratches
+(function () {
+  const rnd = (a, b) => a + Math.random() * (b - a);
+  const TINTS = ['rgba(225,240,245,.40)', 'rgba(200,225,235,.34)', 'rgba(40,80,200,.26)', 'rgba(10,20,40,.26)', 'rgba(255,255,255,.45)'];
+  // [style, message]: original banner wording plus little decorations; edit freely (HTML allowed).
+  // d('...') = small twinkling decoration glyph. Style 'mq' scrolls the text, SLIDER adds a moving slider.
+  const d = t => '<span class="d">' + t + '</span>';
+  const SLIDER = '<span class="slide"><i></i></span>';
+  const BANNERS = [
+    ['red mq',    'give <b>ANYTHING</b> just to love you ' + d('💿')],
+    ['yellow',    d('🌈') + ' CLICK to be touched!<br>CLICK to be downloaded!<br>CLICK to be saved!<br>CLICK to be loved!'],
+    ['rainbow',   'CLICK to be downloaded!<br>CLICK to be blocked! ' + d('✧')],
+    ['blue',      'Please be <u>girlblogging</u> ' + d('✦')],
+    ['pinkdash mq', d('♡') + ' hug me dream me document me ' + d('♡')],
+    ['glow',      d('🧸') + " I'm always texting"],
+    ['pinkfill',  d('❤') + ' loving makes me surreal ' + d('✿')],
+    ['dotted',    d('⋆｡°✩') + ' internet dream ' + d('✩°｡⋆') + SLIDER],
+    ['cyan',      "I'm your algorithm " + d('❤')],
+    ['purple',    'cybernetic baby ' + d('✦')],
+    ['big',       'I LOVE MY HYPERTEXT<br>' + d('✦ ˖ ⋆ ❤ ⋆ ˖ ✦')],
+    ['blue',      d('❝') + ' sometimes lover ' + d('❞') + SLIDER],
+    ['script',    'do you want to hug?<br>' + d('˚ ₊ ⋆ ✧ ⋆ ₊ ˚')],
+    ['pastel',    d('⋆˚✿˖°') + ' forget to index ' + d('°˖✿˚⋆')],
+    ['blackred blink', 'CLICK to be <span style="color:#fff">darling!</span>'],
+    ['blue',      '100% <u>genuine</u> '],
+    ['pinkdash',  d('✦') + ' this user creates ' + d('✦')],
+    ['glow',      d('✧') + ' I love my <u>poetic computer</u> ' + d('✧')],
+    ['pinkfill',  d('🎀') + ' my ambient girl ' + d('🌸')],
+    ['dotted',    d('❝') + ' do you believe in uploading? ' + d('❞')],
+    ['cyan',      'Computer savior ' + d('✧')],
+    ['red blink', 'CLICK <b>FOR</b> CONNECTION! ' + d('🪽')],
+    ['script',    d('✦ •') + ' program soldier ' + d('• ✦')],
+    ['purple',    d('❥') + ' post-database destiny ' + d('❥')],
+    ['big',       'i love my hyperlink ' + d('🐬')]
+  ];
+
+  // fraction of the margin height that gets banners (1 = all the way down)
+  const CLEAR = 1;
+
+  // banners sit still in rows over the photo (clipped at the edges like a collage); their insides animate
+  function layout(layer, W, H, k) {
+    let y = 6;
+    while (y < H * CLEAR) {
+      let x = -rnd(0, 80), rowH = 0; const row = [];
+      while (x < W) {
+        const [cls, html] = BANNERS[k++ % BANNERS.length];
+        const el = document.createElement('div');
+        el.className = 'ob ' + cls;
+        el.innerHTML = cls.indexOf('mq') >= 0 ? '<span class="mqin">' + html + '</span>' : html;
+        el.querySelectorAll('.d').forEach(g => g.style.setProperty('--dl', (-rnd(0, 1.4)).toFixed(2) + 's'));
+        layer.appendChild(el);
+        const w = el.offsetWidth, h = el.offsetHeight;
+        el.style.left = x + 'px'; row.push([el, h]); rowH = Math.max(rowH, h); x += w + rnd(24, 90);
+      }
+      row.forEach(([el, h]) => { el.style.top = (y + (rowH - h) / 2) + 'px'; });
+      y += rowH + rnd(34, 80);
+    }
+  }
+
+  let gen = 0;
+
+  // fade out, jump somewhere new while invisible, fade back in, hold for a bit, repeat
+  function loop(el, fn, gen0, delay) {
+    el.style.opacity = 0;
+    setTimeout(() => {
+      if (gen0 !== gen) return;
+      fn();
+      requestAnimationFrame(() => requestAnimationFrame(() => { el.style.opacity = 1; }));
+      setTimeout(() => { if (gen0 === gen) loop(el, fn, gen0, 750); }, rnd(1200, 3200));
+    }, delay);
+  }
+
+  function build() {
+    gen++; const g = gen;
+    document.querySelectorAll('.fx').forEach((box, side) => {
+      box.innerHTML = '<div class="bn"></div><div class="wash"></div><div class="grain"></div>';
+      const W = box.clientWidth, H = box.clientHeight;
+      if (W < 24) return;
+      // banners are switched off for now; uncomment the next line to bring them back
+      // layout(box.firstChild, W, H, side * 11);
+      // positions that overlap the narrow ring around the console (left, right, top or bottom strip)
+      const wrEl = document.getElementById('wrap'); // (not present on this page)
+      const wr = wrEl ? wrEl.getBoundingClientRect() : { left: 0, top: 0 };
+      const Mx = Math.max(20, wr.left), My = Math.max(20, wr.top);
+      const ring = (w, h) => {
+        if (!wrEl) return [rnd(-.15 * W, .9 * W), rnd(-.05 * H, H - h * .5)];
+        const side = Math.floor(rnd(0, 4));
+        if (side === 0) return [rnd(-.3 * w, .8 * Mx), rnd(-.05 * H, H - h * .5)];
+        if (side === 1) return [rnd(W - Mx - .8 * w, W - .3 * Mx), rnd(-.05 * H, H - h * .5)];
+        if (side === 2) return [rnd(-.15 * W, .9 * W), rnd(-.3 * h, .8 * My)];
+        return [rnd(-.15 * W, .9 * W), rnd(H - My, H - .3 * h)];
+      };
+      const add = (cls, n, move) => { for (let i = 0; i < n; i++) {
+        const el = document.createElement('div'); el.className = cls; box.appendChild(el);
+        loop(el, () => move(el), g, rnd(0, 1500));
+      } };
+
+      add('blk tint', 9, el => {
+        const w = rnd(.15 * W, .6 * W), h = rnd(10, .1 * H), pos = ring(w, h);
+        el.style.left = pos[0] + 'px'; el.style.top = pos[1] + 'px';
+        el.style.width = w + 'px'; el.style.height = h + 'px';
+        el.style.background = TINTS[Math.floor(rnd(0, TINTS.length))];
+      });
+
+      add('blk slice', 8, el => {
+        const w = rnd(.2 * W, .7 * W), h = rnd(12, .12 * H), pos = ring(w, h), x = pos[0], y = pos[1];
+        const dx = rnd(-.45 * W, .45 * W), dy = rnd(-20, 20);
+        // in rare mode the photo spans the whole viewport, so slices must sample from the matching spot
+        const rare = document.documentElement.classList.contains('rare');
+        const bx = rare ? box.getBoundingClientRect().left : 0, bw = rare ? innerWidth : W;
+        Object.assign(el.style, { left: x + 'px', top: y + 'px', width: w + 'px', height: h + 'px',
+          backgroundSize: bw + 'px ' + H + 'px', backgroundPosition: (-(x + bx) + dx) + 'px ' + (-y + dy) + 'px' });
+      });
+
+      // translucent, slightly blurry "NOCOM" that sometimes breaks across lines (NOC / OM ...)
+      const SPLITS = ['NOC\nOM', 'NO\nCOM', 'N\nOCOM', 'NOCO\nM', 'NO\nCO\nM'];
+      add('word', 7, el => {
+        const r = Math.random(), split = Math.random() < .35;
+        el.textContent = split ? SPLITS[Math.floor(rnd(0, SPLITS.length))] : 'NOCOM';
+        el.className = 'word' + (r < .22 ? ' outline' : r < .42 ? ' soft' : r < .66 ? ' dark' : r < .82 ? ' blue' : '');
+        const fs = rnd(46, 150) * (split ? 1.3 : 1), pos = ring(fs * 3.2, fs * (split ? 2 : 1));
+        el.style.fontSize = fs + 'px';
+        el.style.left = pos[0] + 'px'; el.style.top = pos[1] + 'px';
+      });
+
+      for (let i = 0; i < 5; i++) { const h = document.createElement('div'); h.className = 'scratch h'; h.style.top = rnd(2, H) + 'px'; box.appendChild(h); }
+      for (let i = 0; i < 2; i++) { const v = document.createElement('div'); v.className = 'scratch v'; v.style.left = rnd(2, W) + 'px'; box.appendChild(v); }
+    });
+  }
+
+  build();
+  let t; addEventListener('resize', () => { clearTimeout(t); t = setTimeout(build, 250); });
+})();
 </script>
 </body>
 </html>
