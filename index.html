@@ -307,7 +307,8 @@
       box.innerHTML = '<div class="bn"></div><div class="wash"></div><div class="grain"></div>';
       const W = box.clientWidth, H = box.clientHeight;
       if (W < 24) return;
-      layout(box.firstChild, W, H, side * 11);
+      // banners are switched off for now; uncomment the next line to bring them back
+      // layout(box.firstChild, W, H, side * 11);
       const add = (cls, n, move) => { for (let i = 0; i < n; i++) {
         const el = document.createElement('div'); el.className = cls; box.appendChild(el);
         loop(el, () => move(el), g, rnd(0, 1500));
