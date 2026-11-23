@@ -19,7 +19,7 @@
   a { color: var(--link); font-weight: bold; text-decoration: none; }
   a:hover { text-decoration: underline; }
 
-  /* main section: nearly transparent background, with the jellyfish image stretched behind it */
+  /* main section: nearly transparent background, with the last-straw image stretched behind it */
   #wrap { position: relative; z-index: 2; width: 740px; max-width: 100%; margin: 0 auto; min-height: 100vh; }
   #wrap .mid { position: fixed; top: 0; left: 50%; transform: translateX(-50%); width: min(740px, 100vw); height: 100vh; object-fit: fill; z-index: 0; pointer-events: none; }
   #page {
@@ -127,7 +127,11 @@
   .fx .blk { position: absolute; overflow: hidden; }
   .fx .blk, .fx .word { opacity: 0; transition: opacity .7s ease-in-out; }
   .fx .blk.tint  { backdrop-filter: blur(3px) saturate(.7) brightness(1.15); }
-  .fx .blk.slice { background-image: url("assets/jellyfish.jpg"); filter: hue-rotate(60deg) saturate(.6) contrast(1.15) brightness(1.2); }
+  /* rare mode (0.1% of loads): one continuous photo across left margin, main section and right margin */
+  html.rare .side, html.rare .mid { display: none; }
+  #rare { position: fixed; inset: 0; width: 100vw; height: 100vh; object-fit: fill; z-index: 0; pointer-events: none; }
+  .fx .blk.slice { background-image: url("assets/last-straw.jpg"); filter: hue-rotate(60deg) saturate(.6) contrast(1.15) brightness(1.2); }
+  html.rare .fx .blk.slice { background-image: var(--rare-url); }
   .fx .word { position: absolute; white-space: pre; line-height: .95; font-family: Arial, Helvetica, sans-serif;
               color: rgba(255,255,255,.5); mix-blend-mode: screen; filter: blur(1.5px); }
   .fx .word.outline { color: transparent; -webkit-text-stroke: 2px rgba(255,255,255,.8); }
@@ -143,11 +147,22 @@
 </head>
 <body>
 
-<img class="side left" src="assets/jellyfish.jpg" alt="">
-<img class="side right" src="assets/jellyfish.jpg" alt="">
+<script>
+// 0.1% chance: show one of two rare smog photos as a single continuous background instead of the three last-straw copies
+(function () {
+  if (Math.random() >= 0.001) return;
+  var src = Math.random() < .5 ? 'assets/smog-beijing.jpg' : 'assets/smog-shanghai.jpg';
+  document.documentElement.classList.add('rare');
+  document.documentElement.style.setProperty('--rare-url', 'url("' + src + '")');
+  var i = document.createElement('img'); i.id = 'rare'; i.src = src; i.alt = '';
+  document.body.insertBefore(i, document.body.firstChild);
+})();
+</script>
+<img class="side left" src="assets/last-straw.jpg" alt="">
+<img class="side right" src="assets/last-straw.jpg" alt="">
 
 <div id="wrap">
-<img class="mid" src="assets/jellyfish.jpg" alt="">
+<img class="mid" src="assets/last-straw.jpg" alt="">
 <div id="page">
   <div class="bar">
     <h1 class="title" style="font-size:12px">horses - Microsoft Internet Explorer</h1>
@@ -323,8 +338,11 @@
       add('blk slice', 8, el => {
         const w = rnd(.3 * W, W * 1.1), h = rnd(12, .14 * H), x = rnd(-.1 * W, .7 * W), y = rnd(0, H - h);
         const dx = rnd(-.45 * W, .45 * W), dy = rnd(-20, 20);
+        // in rare mode the photo spans the whole viewport, so slices must sample from the matching spot
+        const rare = document.documentElement.classList.contains('rare');
+        const bx = rare ? box.getBoundingClientRect().left : 0, bw = rare ? innerWidth : W;
         Object.assign(el.style, { left: x + 'px', top: y + 'px', width: w + 'px', height: h + 'px',
-          backgroundSize: W + 'px ' + H + 'px', backgroundPosition: (-x + dx) + 'px ' + (-y + dy) + 'px' });
+          backgroundSize: bw + 'px ' + H + 'px', backgroundPosition: (-(x + bx) + dx) + 'px ' + (-y + dy) + 'px' });
       });
 
       // translucent, slightly blurry "NOCOM" that sometimes breaks across lines (NOC / OM ...)
