@@ -30,7 +30,7 @@
   .mid { left: 33.33%; width: 33.34%; }
   .side.right { right: 0; }
   #wrap { position: fixed; z-index: 2; left: 50%; top: 50%; transform: translate(-50%, -50%);
-          width: clamp(740px, 64vw, 1500px); height: clamp(440px, 58vh, 920px); max-width: 94vw; max-height: 92vh; }
+          width: clamp(740px, 72.3vw, 1700px); height: clamp(440px, 75.6vh, 1000px); max-width: 94vw; max-height: 92vh; }
   #page {
     width: 100%; height: 100%; margin: 0; padding: 12px 14px 20px; position: relative; z-index: 1;
     overflow-y: auto; scrollbar-width: thin; scrollbar-color: #5a5a60 transparent;
@@ -195,8 +195,10 @@
 //   - one of two smog photos stretched as a single continuous image across all three sections
 (function () {
   var RARE_CHANCE = 0.001;
-  if (Math.random() >= RARE_CHANCE) return;
-  var pull = Math.floor(Math.random() * 3);
+  // testing: index.html#2696 forces a rare pull (random one); #2696.0 = andrew, #2696.1 = beijing smog, #2696.2 = shanghai smog
+  var forced = /^#2696(?:\.([012]))?$/.exec(location.hash);
+  if (!forced && Math.random() >= RARE_CHANCE) return;
+  var pull = forced && forced[1] !== undefined ? +forced[1] : Math.floor(Math.random() * 3);
   if (pull === 0) { document.documentElement.classList.add('andrew'); return; }
   var src = pull === 1 ? 'assets/smog-beijing.jpg' : 'assets/smog-shanghai.jpg';
   document.documentElement.classList.add('rare');
