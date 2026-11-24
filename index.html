@@ -513,7 +513,7 @@ if (document.documentElement.classList.contains('andrew'))
 // Continuous image ticker in the grey top bar.
 (function () {
   var SPEED = 135; // pixels per second
-  var FALLBACK_FILES = ['antisocial.gif', 'b2d.gif', 'blinkiesCafe-30.gif', 'blinkiesCafe-dI.gif', 'blinkiesCafe-oK.gif', 'do you believe in jellyfish.gif', 'fhs.gif', 'head in the clouds.gif', 'i love ipod.gif', 'i so dont gaf.gif', 'lucky star.gif', 'missinu.gif', 'panchiko.gif', 'sensitive.gif', 'stargazer.gif'];
+  var FALLBACK_FILES = ['antisocial.gif', 'b2d.gif', 'blinkiesCafe-30.gif', 'blinkiesCafe-dI.gif', 'blinkiesCafe-oK.gif', 'fhs.gif', 'head in the clouds.gif', 'i love ipod.gif', 'i so dont gaf.gif', 'lucky star.gif', 'missinu.gif', 'panchiko.gif', 'sensitive.gif', 'stargazer.gif'];
   var FILES = window.NOCOM_SCROLL && window.NOCOM_SCROLL.length ? window.NOCOM_SCROLL : FALLBACK_FILES;
   var SOURCES = FILES.map(function (name) { return 'scroll/' + encodeURIComponent(name); });
   var bar = document.querySelector('.chrome.top .ticker');
@@ -521,7 +521,7 @@ if (document.documentElement.classList.contains('andrew'))
   var track = bar.querySelector('.track');
 
   // Rare blinkies: file name -> N. They show up once every N passes through the sequence instead of every pass.
-  var RARE = { 'john test.gif': 20 };
+  var RARE = { 'john test.gif': 100 };
   function rarity(src) { return RARE[decodeURIComponent(src.slice(7))] || 0; } // src is 'scroll/<name>'
 
   function img(src) {
