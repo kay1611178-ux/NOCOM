@@ -50,8 +50,7 @@
   .chrome.bot { margin: 14px 0 0; }
 
   .hd { display: flex; align-items: center; gap: 14px; padding: 8px 6px 10px; }
-  .emblem { width: 50px; height: 28px; border: 3px solid var(--blue); border-radius: 50%; position: relative; background: #eef1fa; flex: none; }
-  .emblem::after { content: ''; position: absolute; left: 50%; top: -6px; width: 6px; height: 34px; margin-left: -3px; background: #2f8f55; border: 1px solid #1d3a8c; }
+  .emblem { display: block; width: 40px; height: 40px; object-fit: contain; flex: none; }
   .hd .vr { width: 1px; align-self: stretch; background: #1b2340; opacity: .6; }
   .hd b { display: block; font: 300 22px/1 "Trebuchet MS", Verdana, sans-serif; letter-spacing: .35em; color: #1b2340; }
   .hd small { display: block; margin-top: 4px; font-size: 8px; letter-spacing: .22em; color: var(--blue); font-weight: bold; }
@@ -224,7 +223,7 @@ if (document.documentElement.classList.contains('andrew'))
   <div class="chrome"></div>
 
   <header class="hd">
-    <span class="emblem"></span>
+    <img class="emblem" src="assets/favicon.png" alt="NOCOM star logo">
     <span class="vr"></span>
     <div><b>NOCOM</b><small>HORSES THROUGH TECHNOLOGY</small></div>
   </header>
