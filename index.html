@@ -207,24 +207,16 @@
     background: linear-gradient(160deg, rgba(210,235,245,.28), rgba(30,70,190,.18)); }
   .fx .grain { position: absolute; inset: 0; opacity: .55; mix-blend-mode: overlay;
     background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 .9 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>"); }
-  .fx .blk { position: absolute; overflow: hidden; }
-  .fx .blk, .fx .word { opacity: 0; transition: opacity .7s ease-in-out; }
-  .fx .blk.tint  { backdrop-filter: blur(3px) saturate(.7) brightness(1.15); }
+  .fx .word { opacity: 0; transition: opacity .7s ease-in-out; }
   /* rare smog pull: one continuous photo across left margin, main section and right margin */
   html.rare .bg, html.andrew .bg, html.rare .wbg, html.andrew .wbg { display: none; }
   #rare { position: fixed; inset: 0; width: 100vw; height: 100vh; object-fit: fill; z-index: 0; pointer-events: none; }
-  .fx .blk.slice { background-image: url("assets/winter-forest.png"); filter: hue-rotate(60deg) saturate(.6) contrast(1.15) brightness(1.2); }
-  html.rare .fx .blk.slice { background-image: var(--rare-url); }
-  html.andrew .fx .blk.slice { background-image: url("assets/last-straw.jpg"); }
   .fx .word { position: absolute; white-space: pre; line-height: .95; font-family: Arial, Helvetica, sans-serif;
               color: rgba(255,255,255,.5); mix-blend-mode: screen; filter: blur(1.5px); }
   .fx .word.outline { color: transparent; -webkit-text-stroke: 2px rgba(255,255,255,.8); }
   .fx .word.soft { filter: blur(3px); color: rgba(210,235,255,.5); }
   .fx .word.dark { color: rgba(8,14,40,.38); mix-blend-mode: multiply; }
   .fx .word.blue { color: rgba(30,70,210,.32); mix-blend-mode: multiply; }
-  .fx .scratch { position: absolute; background: rgba(255,255,255,.5); }
-  .fx .scratch.h { height: 1px; left: 0; right: 0; }
-  .fx .scratch.v { width: 1px; top: 0; bottom: 0; background: rgba(255,255,255,.35); }
 
   @media (max-width: 720px) { .cols { grid-template-columns: 1fr; } }
 </style>
@@ -361,11 +353,10 @@
 </defs></svg>
 <div class="fx" aria-hidden="true"></div>
 <script>
-// banners + glitch effect over the two horse-photo margins: banners laid out over the photo, then shifted photo slices, blurred blocks,
-// translucent blurry "NOCOM" lettering (sometimes split over lines), grain and scratches
+// background effect: translucent blurry "NOCOM" lettering (sometimes split over lines) drifting around the edges, over a soft
+// grain/wash layer (the shifted photo slices, tinted bars and scratches were removed)
 (function () {
   const rnd = (a, b) => a + Math.random() * (b - a);
-  const TINTS = ['rgba(225,240,245,.40)', 'rgba(200,225,235,.34)', 'rgba(40,80,200,.26)', 'rgba(10,20,40,.26)', 'rgba(255,255,255,.45)'];
   // [style, message]: original banner wording plus little decorations; edit freely (HTML allowed).
   // d('...') = small twinkling decoration glyph. Style 'mq' scrolls the text, SLIDER adds a moving slider.
   const d = t => '<span class="d">' + t + '</span>';
@@ -457,23 +448,6 @@
         loop(el, () => move(el), g, rnd(0, 1500));
       } };
 
-      add('blk tint', 9, el => {
-        const w = rnd(.15 * W, .6 * W), h = rnd(10, .1 * H), pos = ring(w, h);
-        el.style.left = pos[0] + 'px'; el.style.top = pos[1] + 'px';
-        el.style.width = w + 'px'; el.style.height = h + 'px';
-        el.style.background = TINTS[Math.floor(rnd(0, TINTS.length))];
-      });
-
-      add('blk slice', 8, el => {
-        const w = rnd(.2 * W, .7 * W), h = rnd(12, .12 * H), pos = ring(w, h), x = pos[0], y = pos[1];
-        const dx = rnd(-.45 * W, .45 * W), dy = rnd(-20, 20);
-        // in rare mode the photo spans the whole viewport, so slices must sample from the matching spot
-        const rare = document.documentElement.classList.contains('rare');
-        const bx = rare ? box.getBoundingClientRect().left : 0, bw = rare ? innerWidth : W;
-        Object.assign(el.style, { left: x + 'px', top: y + 'px', width: w + 'px', height: h + 'px',
-          backgroundSize: bw + 'px ' + H + 'px', backgroundPosition: (-(x + bx) + dx) + 'px ' + (-y + dy) + 'px' });
-      });
-
       // translucent, slightly blurry "NOCOM" that sometimes breaks across lines (NOC / OM ...)
       const SPLITS = ['NOC\nOM', 'NO\nCOM', 'N\nOCOM', 'NOCO\nM', 'NO\nCO\nM'];
       add('word', 7, el => {
@@ -484,9 +458,6 @@
         el.style.fontSize = fs + 'px';
         el.style.left = pos[0] + 'px'; el.style.top = pos[1] + 'px';
       });
-
-      for (let i = 0; i < 5; i++) { const h = document.createElement('div'); h.className = 'scratch h'; h.style.top = rnd(2, H) + 'px'; box.appendChild(h); }
-      for (let i = 0; i < 2; i++) { const v = document.createElement('div'); v.className = 'scratch v'; v.style.left = rnd(2, W) + 'px'; box.appendChild(v); }
     });
   }
 
@@ -548,8 +519,8 @@
 })();
 </script>
 <script>
-// "genuinely who invited you": the same kind of glitch as the NOCOM lettering (torn, shifted slices, blur, ghosting)
-// in the background's own palette, but harsher and brief, and rare: one short burst about every 30s with a random offset (+/- 12s).
+// "genuinely who invited you": a brief glitch (torn, shifted slices, blur, ghosting) in the background's own palette,
+// rare: one short burst about every 30s with a random offset (+/- 12s).
 // index.html#glitch fires a burst every ~3s so it can be previewed.
 (function () {
   var el = document.querySelector('.vision-copy');
