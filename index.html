@@ -103,10 +103,19 @@
   .headline { text-align: right; font: 17px/1.1 "Trebuchet MS", Verdana, sans-serif; letter-spacing: .04em; text-transform: none; color: #fff; margin: 0 0 10px; }
   .headline em { font-style: normal; color: #dbe6ff; letter-spacing: .14em; text-transform: uppercase; display: block; font-size: 19px; }
   .vision .wb > div:last-child { min-width: 0; container-type: inline-size; }
+  .vision::before {
+    content: ""; position: absolute; z-index: 0;
+    left: calc(16px + 200px + 16px + 1px); right: 0; top: 0; bottom: 0;
+    background: url("assets/vision-background.png") center center / cover no-repeat;
+    pointer-events: none;
+  }
+  .vision > .wt, .vision > .wb, .vision > .wf { position: relative; z-index: 1; }
+  .vision > .wt { background: linear-gradient(rgba(212,212,216,.72), rgba(134,134,140,.72)); }
+  .vision > .wf { background: rgba(90,90,96,.42); }
   .vision-copy {
     height: 115px; margin: 0 0 10px; display: flex; flex-direction: column;
     align-items: center; justify-content: center; overflow: hidden;
-    color: #f4f7ff; text-shadow: none;
+    color: #14141a; text-shadow: 0 1px 3px rgba(255,255,255,.9);
     font-family: "Josefin Sans", "Century Gothic", "Avant Garde", Futura, sans-serif;
     font-size: clamp(30px, 5vw, 62px);
     font-size: clamp(30px, 9.5cqi, 62px);
@@ -134,6 +143,7 @@
     #wrap { width: 94vw; height: 90vh; }
     .cols { grid-template-columns: 1fr; }
     .vision .wb { grid-template-columns: 1fr; }
+    .vision::before { left: 0; top: 269px; }
     .divider { display: none; }
     .shot img { height: 220px; }
   }
