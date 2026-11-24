@@ -49,6 +49,16 @@
                    box-shadow: 9px 0 #e4e4e8, 18px 0 #a9a9ae; }
   .chrome.bot { margin: 14px 0 0; }
 
+  /* top chrome doubles as an endless blinkie ticker (images inside .scroll/) */
+  .chrome.top { height: 22px; overflow: hidden; }
+  .ticker { position: absolute; inset: 0; overflow: hidden; }
+  .ticker .track { display: flex; width: max-content; height: 100%; animation: tickerSlide linear infinite; will-change: transform; }
+  .ticker .chunk { display: flex; flex: none; height: 100%; }
+  .ticker img { display: block; flex: none; height: 100%; width: auto; margin: 0; padding: 0; border: 0;
+                image-rendering: pixelated; }
+  @keyframes tickerSlide { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+  @media (prefers-reduced-motion: reduce) { .ticker .track { animation: none; } }
+
   .hd { display: flex; align-items: center; gap: 14px; padding: 8px 6px 10px; }
   .emblem { display: block; width: 40px; height: 40px; object-fit: contain; flex: none; }
   .hd .vr { width: 1px; align-self: stretch; background: #1b2340; opacity: .6; }
@@ -220,7 +230,9 @@ if (document.documentElement.classList.contains('andrew'))
   document.querySelectorAll('.side, .mid').forEach(function (i) { i.src = 'assets/last-straw.jpg'; });
 </script>
 <div id="page">
-  <div class="chrome"></div>
+  <div class="chrome top">
+    <div class="ticker" aria-hidden="true"><div class="track"></div></div>
+  </div>
 
   <header class="hd">
     <img class="emblem" src="assets/favicon.png" alt="NOCOM star logo">
@@ -494,6 +506,55 @@ if (document.documentElement.classList.contains('andrew'))
 
   // coming back with the browser's back button: don't show the frozen cube
   addEventListener('pageshow', function (e) { if (e.persisted) location.reload(); });
+})();
+</script>
+<script>
+// top chrome ticker: blinkies from scroll/ scroll edge-to-edge on an endless loop (like the jtportal news ticker).
+// The track holds two identical chunks and slides by -50%, so the wrap point is invisible and no gaps appear.
+(function () {
+  var SPEED = 45; // px per second
+  var SOURCES = ['scroll/blinkiesCafe-30.gif', 'scroll/blinkiesCafe-dI.gif', 'scroll/blinkiesCafe-oK.gif'];
+  var bar = document.querySelector('.chrome.top .ticker');
+  if (!bar) return;
+  var track = bar.querySelector('.track');
+
+  function build() {
+    var seq = document.createElement('div');
+    seq.className = 'chunk';
+    SOURCES.forEach(function (src) {
+      var img = document.createElement('img');
+      img.src = src; img.alt = ''; img.draggable = false;
+      seq.appendChild(img);
+    });
+    track.innerHTML = '';
+    track.appendChild(seq);
+
+    // repeat the sequence until one chunk is at least as wide as the bar, then duplicate that chunk
+    var seqWidth = seq.getBoundingClientRect().width || 450;
+    var copies = Math.max(1, Math.ceil(bar.clientWidth / seqWidth));
+    var chunk = document.createElement('div');
+    chunk.className = 'chunk';
+    for (var i = 0; i < copies; i++) chunk.appendChild(seq.cloneNode(true));
+
+    track.innerHTML = '';
+    track.appendChild(chunk);
+    track.appendChild(chunk.cloneNode(true));
+
+    var chunkWidth = chunk.getBoundingClientRect().width;
+    track.style.animationDuration = Math.max(4, chunkWidth / SPEED) + 's';
+  }
+
+  var pending = SOURCES.length;
+  function ready() { if (--pending === 0) build(); }
+  SOURCES.forEach(function (src) {
+    var probe = new Image();
+    probe.onload = ready;
+    probe.onerror = ready;
+    probe.src = src;
+  });
+
+  var t;
+  addEventListener('resize', function () { clearTimeout(t); t = setTimeout(build, 250); });
 })();
 </script>
 </body>
