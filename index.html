@@ -547,8 +547,10 @@
   var test = location.hash === '#glitch';
   var EVERY = test ? 3000 : 30000, JITTER = test ? 800 : 12000;
   var TICK = 60, TICKS_MIN = 16, TICKS_MAX = 26; // ~1-1.5s of rapid re-randomising
-  // the winter-forest background's own mauve/grey palette (sampled from the image) plus a near-white
-  var COLORS = ['#4b444d', '#70676f', '#7e6f7d', '#958594', '#a69ca6', '#d1ced1', '#f1edf3'];
+  // the winter-forest background's mauve/grey palette (sampled from the image), the console's greyish blue
+  // (sampled from a full-page screenshot) and a near-white
+  var COLORS = ['#4b444d', '#70676f', '#7e6f7d', '#958594', '#a69ca6', '#d1ced1', '#f1edf3',
+                '#697187', '#7f8496', '#717b95'];
   var rnd = function (a, b) { return a + Math.random() * (b - a); };
   var pick = function (a) { return a[Math.floor(Math.random() * a.length)]; };
   var inner = el.innerHTML;
