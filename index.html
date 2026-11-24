@@ -34,7 +34,7 @@
   .side.right { right: 0; }
   #wrap { position: fixed; z-index: 2; left: 50%; top: 50%; transform: translate(-50%, -50%);
           width: clamp(740px, 72.3vw, 1700px); height: clamp(440px, 75.6vh, 1000px); max-width: 94vw; max-height: 92vh; }
-  /* forest backdrop of the window itself: in front of the jellyfish, behind all the window content */
+  /* forest backdrop of the window itself: in front of the background image, behind all the window content */
   .wbg { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: fill; z-index: 0; pointer-events: none; }
   #page {
     width: 100%; height: 100%; margin: 0; padding: 12px 14px 20px; position: relative; z-index: 1;
@@ -205,7 +205,7 @@
   /* rare smog pull: one continuous photo across left margin, main section and right margin */
   html.rare .side, html.rare .mid, html.rare .wbg, html.andrew .wbg { display: none; }
   #rare { position: fixed; inset: 0; width: 100vw; height: 100vh; object-fit: fill; z-index: 0; pointer-events: none; }
-  .fx .blk.slice { background-image: url("assets/jellyfish.jpg"); filter: hue-rotate(60deg) saturate(.6) contrast(1.15) brightness(1.2); }
+  .fx .blk.slice { background-image: url("assets/winter-forest.png"); filter: hue-rotate(60deg) saturate(.6) contrast(1.15) brightness(1.2); }
   html.rare .fx .blk.slice { background-image: var(--rare-url); }
   html.andrew .fx .blk.slice { background-image: url("assets/last-straw.jpg"); }
   .fx .word { position: absolute; white-space: pre; line-height: .95; font-family: Arial, Helvetica, sans-serif;
@@ -224,7 +224,7 @@
 <body>
 
 <script>
-// rare background pulls. Normally the jellyfish image fills all three sections.
+// rare background pulls. Normally the winter-forest image fills all three sections.
 // RARE_CHANCE of loads instead get one of three rare pulls (equal odds between them):
 //   - "andrew": the last-straw photo in each section (original configuration)
 //   - one of two smog photos stretched as a single continuous image across all three sections
@@ -242,9 +242,9 @@
   document.body.insertBefore(i, document.body.firstChild);
 })();
 </script>
-<img class="side left" src="assets/jellyfish.jpg" alt="">
-<img class="mid" src="assets/jellyfish.jpg" alt="">
-<img class="side right" src="assets/jellyfish.jpg" alt="">
+<img class="side left" src="assets/winter-forest.png" alt="">
+<img class="mid" src="assets/winter-forest.png" alt="">
+<img class="side right" src="assets/winter-forest.png" alt="">
 
 <div id="wrap">
 <img class="wbg" src="assets/forest.jpg" alt="">
