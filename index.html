@@ -520,24 +520,44 @@ if (document.documentElement.classList.contains('andrew'))
   if (!bar || !SOURCES.length) return;
   var track = bar.querySelector('.track');
 
+  // Rare blinkies: file name -> N. They show up once every N passes through the sequence instead of every pass.
+  var RARE = { 'john test.gif': 20 };
+  function rarity(src) { return RARE[decodeURIComponent(src.slice(7))] || 0; } // src is 'scroll/<name>'
+
+  function img(src) {
+    var el = document.createElement('img');
+    el.src = src; el.alt = ''; el.draggable = false;
+    return el;
+  }
+
   function build() {
+    var common = SOURCES.filter(function (src) { return !rarity(src); });
+    var rare = SOURCES.filter(rarity);
+    if (!common.length) { common = SOURCES; rare = []; } // nothing but rare files: just show them all
+
     var seq = document.createElement('div');
     seq.className = 'chunk';
-    SOURCES.forEach(function (src) {
-      var img = document.createElement('img');
-      img.src = src; img.alt = ''; img.draggable = false;
-      seq.appendChild(img);
-    });
+    common.forEach(function (src) { seq.appendChild(img(src)); });
     track.innerHTML = '';
     track.appendChild(seq);
 
-    // Repeat the full blinkie sequence enough times to cover the bar, then duplicate it for a seamless loop.
+    // One chunk = enough passes to cover the bar AND to fit every rare file's N (so each appears once per chunk).
     var seqWidth = seq.getBoundingClientRect().width;
     if (!seqWidth) return;
-    var copies = Math.max(1, Math.ceil(bar.clientWidth / seqWidth));
+    var passes = Math.max(1, Math.ceil(bar.clientWidth / seqWidth));
+    rare.forEach(function (src) { passes = Math.max(passes, rarity(src)); });
     var chunk = document.createElement('div');
     chunk.className = 'chunk';
-    for (var i = 0; i < copies; i++) chunk.appendChild(seq.cloneNode(true));
+    for (var i = 0; i < passes; i++) chunk.appendChild(seq.cloneNode(true));
+
+    // Drop each rare file into one random pass out of every N, at a random spot in that pass.
+    rare.forEach(function (src) {
+      var n = rarity(src);
+      for (var start = 0; start < passes; start += n) {
+        var pass = chunk.children[Math.min(passes - 1, start + Math.floor(Math.random() * n))];
+        pass.insertBefore(img(src), pass.children[Math.floor(Math.random() * (pass.children.length + 1))] || null);
+      }
+    });
 
     track.innerHTML = '';
     track.appendChild(chunk);
