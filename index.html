@@ -99,7 +99,8 @@
   .vision .wb { display: grid; grid-template-columns: 200px 1px 1fr; gap: 16px; align-items: start; }
   .shot { position: relative; border: 1px solid #25252b; background: #fff; }
   .shot img { display: block; width: 100%; height: 230px; object-fit: cover; object-position: 30% 42%; filter: saturate(.9) contrast(1.05); }
-  .shot.straw img { object-position: 50% 100%; }
+  /* the last-straw meme is recoloured to the pfp's palette: greyscale, then dark -> #4d6b84, mid -> #a4b9cb, light -> near-white (#strawduo) */
+  .shot.straw img { object-position: 50% 100%; filter: url(#strawduo); }
   /* hidden toggle in the header tagline: must look exactly like the surrounding text */
   .hd small a, .hd small a:hover, .hd small a:focus { text-decoration: none; cursor: auto; outline: none; -webkit-tap-highlight-color: transparent; }
   .shot::after { content: ''; position: absolute; inset: 0; pointer-events: none; background: repeating-linear-gradient(0deg, rgba(0,0,0,.14) 0 1px, transparent 1px 3px); }
@@ -351,6 +352,13 @@
 </div>
 </div>
 
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><defs>
+  <filter id="strawduo" color-interpolation-filters="sRGB">
+    <feColorMatrix type="saturate" values="0"/>
+    <feComponentTransfer><feFuncR type="linear" slope="1.5" intercept="-0.05"/><feFuncG type="linear" slope="1.5" intercept="-0.05"/><feFuncB type="linear" slope="1.5" intercept="-0.05"/></feComponentTransfer>
+    <feComponentTransfer><feFuncR type="table" tableValues="0.30 0.64 0.94"/><feFuncG type="table" tableValues="0.42 0.73 0.95"/><feFuncB type="table" tableValues="0.52 0.80 0.96"/></feComponentTransfer>
+  </filter>
+</defs></svg>
 <div class="fx" aria-hidden="true"></div>
 <script>
 // banners + glitch effect over the two horse-photo margins: banners laid out over the photo, then shifted photo slices, blurred blocks,
