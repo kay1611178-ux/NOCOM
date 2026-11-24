@@ -99,6 +99,17 @@
   .divider { width: 1px; align-self: stretch; background: rgba(255,255,255,.5); }
   .headline { text-align: right; font: 17px/1.1 "Trebuchet MS", Verdana, sans-serif; letter-spacing: .04em; text-transform: none; color: #fff; margin: 0 0 10px; }
   .headline em { font-style: normal; color: #dbe6ff; letter-spacing: .14em; text-transform: uppercase; display: block; font-size: 19px; }
+  .vision .wb > div:last-child { min-width: 0; container-type: inline-size; }
+  .vision-copy {
+    height: 115px; margin: 0 0 10px; display: flex; flex-direction: column;
+    align-items: center; justify-content: center; overflow: hidden;
+    color: #f4f7ff; text-shadow: none;
+    font-family: "Century Gothic", "Avant Garde", Futura, sans-serif;
+    font-size: clamp(30px, 5vw, 62px);
+    font-size: clamp(30px, 9.5cqi, 62px);
+    font-weight: 400; line-height: .88; letter-spacing: .025em; text-align: center;
+  }
+  .vision-copy span { display: block; white-space: nowrap; transform: scaleX(1.18); }
   .arrow { float: left; width: 16px; height: 16px; margin: 2px 8px 0 0; border-radius: 50%; border: 2px solid #eef; position: relative; }
   .arrow::after { content: ''; position: absolute; left: 3px; top: 2px; border-left: 5px solid #eef; border-top: 4px solid transparent; border-bottom: 4px solid transparent; }
   .vision p { margin: 0 0 10px; }
@@ -270,8 +281,7 @@ if (document.documentElement.classList.contains('andrew'))
           <span class="divider"></span>
           <div>
             <p class="headline"><span class="arrow"></span>en<b style="font-weight:400">HORSE</b> the<em>Future.</em></p>
-            <p>Lorem ipsum dolor sit amet, I like horses consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
-            <p>Horses ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo horses consequat.</p>
+            <p class="vision-copy" aria-label="genuinely who invited you"><span>genuinely who </span><span>invited you</span></p>
             <a class="btn" href="stickers.html">[ View stickers ]</a>
           </div>
         </div>
