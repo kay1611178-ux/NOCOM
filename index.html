@@ -26,7 +26,8 @@
 
   /* main section: translucent steel-blue console over the background image */
   /* the photo sits behind everything; the console covers all but a narrow ring around the edges */
-  /* background: three equal stretched sections, full height */
+  /* background: one image stretched over the full viewport (the rare "andrew" pull still uses three sections) */
+  .bg { position: fixed; inset: 0; width: 100vw; height: 100vh; object-fit: fill; z-index: 0; pointer-events: none; }
   .mid, .side { position: fixed; top: 0; height: 100vh; object-fit: fill; z-index: 0; pointer-events: none; }
   .side { width: 33.34%; }
   .side.left { left: 0; }
@@ -34,7 +35,7 @@
   .side.right { right: 0; }
   #wrap { position: fixed; z-index: 2; left: 50%; top: 50%; transform: translate(-50%, -50%);
           width: clamp(740px, 72.3vw, 1700px); height: clamp(440px, 75.6vh, 1000px); max-width: 94vw; max-height: 92vh; }
-  /* forest backdrop of the window itself: in front of the jellyfish, behind all the window content */
+  /* forest backdrop of the window itself: in front of the background image, behind all the window content */
   .wbg { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: fill; z-index: 0; pointer-events: none; }
   #page {
     width: 100%; height: 100%; margin: 0; padding: 12px 14px 20px; position: relative; z-index: 1;
@@ -98,6 +99,10 @@
   .vision .wb { display: grid; grid-template-columns: 200px 1px 1fr; gap: 16px; align-items: start; }
   .shot { position: relative; border: 1px solid #25252b; background: #fff; }
   .shot img { display: block; width: 100%; height: 230px; object-fit: cover; object-position: 30% 42%; filter: saturate(.9) contrast(1.05); }
+  /* the last-straw meme is recoloured to the pfp's palette: greyscale, then dark -> #4d6b84, mid -> #a4b9cb, light -> near-white (#strawduo) */
+  .shot.straw img { object-position: 50% 100%; filter: url(#strawduo); }
+  /* hidden toggle in the header tagline: must look exactly like the surrounding text */
+  .hd small a, .hd small a:hover, .hd small a:focus { text-decoration: none; cursor: auto; outline: none; -webkit-tap-highlight-color: transparent; }
   .shot::after { content: ''; position: absolute; inset: 0; pointer-events: none; background: repeating-linear-gradient(0deg, rgba(0,0,0,.14) 0 1px, transparent 1px 3px); }
   .divider { width: 1px; align-self: stretch; background: rgba(255,255,255,.5); }
   .headline { text-align: right; font: 17px/1.1 "Trebuchet MS", Verdana, sans-serif; letter-spacing: .04em; text-transform: none; color: #fff; margin: 0 0 10px; }
@@ -115,13 +120,16 @@
   .vision-copy {
     height: 115px; margin: 0 0 10px; display: flex; flex-direction: column;
     align-items: center; justify-content: center; overflow: hidden;
-    color: #14141a; text-shadow: 0 1px 3px rgba(255,255,255,.9);
+    color: #14141a; text-shadow: 0 1px 3px rgba(255,255,255,.9); position: relative;
     font-family: "Josefin Sans", "Century Gothic", "Avant Garde", Futura, sans-serif;
     font-size: clamp(30px, 5vw, 62px);
     font-size: clamp(30px, 9.5cqi, 62px);
     font-weight: 300; line-height: .88; letter-spacing: .035em; text-align: center;
   }
   .vision-copy span { display: block; white-space: nowrap; transform: scaleX(1.18); }
+  /* rare glitch burst (see the vision-copy script); the tearing stays inside the text box */
+  .vision-copy .vg { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center;
+                     justify-content: center; pointer-events: none; }
   .arrow { float: left; width: 16px; height: 16px; margin: 2px 8px 0 0; border-radius: 50%; border: 2px solid #eef; position: relative; }
   .arrow::after { content: ''; position: absolute; left: 3px; top: 2px; border-left: 5px solid #eef; border-top: 4px solid transparent; border-bottom: 4px solid transparent; }
   .vision p { margin: 0 0 10px; }
@@ -203,9 +211,9 @@
   .fx .blk, .fx .word { opacity: 0; transition: opacity .7s ease-in-out; }
   .fx .blk.tint  { backdrop-filter: blur(3px) saturate(.7) brightness(1.15); }
   /* rare smog pull: one continuous photo across left margin, main section and right margin */
-  html.rare .side, html.rare .mid, html.rare .wbg, html.andrew .wbg { display: none; }
+  html.rare .bg, html.andrew .bg, html.rare .wbg, html.andrew .wbg { display: none; }
   #rare { position: fixed; inset: 0; width: 100vw; height: 100vh; object-fit: fill; z-index: 0; pointer-events: none; }
-  .fx .blk.slice { background-image: url("assets/jellyfish.jpg"); filter: hue-rotate(60deg) saturate(.6) contrast(1.15) brightness(1.2); }
+  .fx .blk.slice { background-image: url("assets/winter-forest.png"); filter: hue-rotate(60deg) saturate(.6) contrast(1.15) brightness(1.2); }
   html.rare .fx .blk.slice { background-image: var(--rare-url); }
   html.andrew .fx .blk.slice { background-image: url("assets/last-straw.jpg"); }
   .fx .word { position: absolute; white-space: pre; line-height: .95; font-family: Arial, Helvetica, sans-serif;
@@ -224,9 +232,9 @@
 <body>
 
 <script>
-// rare background pulls. Normally the jellyfish image fills all three sections.
+// rare background pulls. Normally the winter-forest image fills the whole background.
 // RARE_CHANCE of loads instead get one of three rare pulls (equal odds between them):
-//   - "andrew": the last-straw photo in each section (original configuration)
+//   - "andrew": the last-straw photo in each of three sections (original configuration)
 //   - one of two smog photos stretched as a single continuous image across all three sections
 (function () {
   var RARE_CHANCE = 0.001;
@@ -234,7 +242,15 @@
   var forced = /^#2696(?:\.([012]))?$/.exec(location.hash);
   if (!forced && Math.random() >= RARE_CHANCE) return;
   var pull = forced && forced[1] !== undefined ? +forced[1] : Math.floor(Math.random() * 3);
-  if (pull === 0) { document.documentElement.classList.add('andrew'); return; }
+  if (pull === 0) {
+    document.documentElement.classList.add('andrew');
+    // the original three-section layout, only used for this rare pull
+    ['side left', 'mid', 'side right'].forEach(function (c) {
+      var s = document.createElement('img'); s.className = c; s.src = 'assets/last-straw.jpg'; s.alt = '';
+      document.body.insertBefore(s, document.body.firstChild);
+    });
+    return;
+  }
   var src = pull === 1 ? 'assets/smog-beijing.jpg' : 'assets/smog-shanghai.jpg';
   document.documentElement.classList.add('rare');
   document.documentElement.style.setProperty('--rare-url', 'url("' + src + '")');
@@ -242,17 +258,10 @@
   document.body.insertBefore(i, document.body.firstChild);
 })();
 </script>
-<img class="side left" src="assets/jellyfish.jpg" alt="">
-<img class="mid" src="assets/jellyfish.jpg" alt="">
-<img class="side right" src="assets/jellyfish.jpg" alt="">
+<img class="bg" src="assets/winter-forest.png" alt="">
 
 <div id="wrap">
 <img class="wbg" src="assets/forest.jpg" alt="">
-<script>
-// "andrew" rare pull: swap the three section images to the last-straw photo before anything is painted
-if (document.documentElement.classList.contains('andrew'))
-  document.querySelectorAll('.side, .mid').forEach(function (i) { i.src = 'assets/last-straw.jpg'; });
-</script>
 <div id="page">
   <div class="chrome top">
     <div class="ticker" aria-hidden="true"><div class="track"></div></div>
@@ -261,7 +270,7 @@ if (document.documentElement.classList.contains('andrew'))
   <header class="hd">
     <img class="emblem" src="assets/star.png" alt="NOCOM star logo">
     <span class="vr"></span>
-    <div><b>NOCOM</b><small>HORSES THROUGH TECHNOLOGY</small></div>
+    <div><b>NOCOM</b><small><a href="#" id="horses">HORSES</a> THROUGH TECHNOLOGY</small></div>
   </header>
 
   <nav class="strip">
@@ -343,6 +352,13 @@ if (document.documentElement.classList.contains('andrew'))
 </div>
 </div>
 
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><defs>
+  <filter id="strawduo" color-interpolation-filters="sRGB">
+    <feColorMatrix type="saturate" values="0"/>
+    <feComponentTransfer><feFuncR type="linear" slope="1.5" intercept="-0.05"/><feFuncG type="linear" slope="1.5" intercept="-0.05"/><feFuncB type="linear" slope="1.5" intercept="-0.05"/></feComponentTransfer>
+    <feComponentTransfer><feFuncR type="table" tableValues="0.30 0.64 0.94"/><feFuncG type="table" tableValues="0.42 0.73 0.95"/><feFuncB type="table" tableValues="0.52 0.80 0.96"/></feComponentTransfer>
+  </filter>
+</defs></svg>
 <div class="fx" aria-hidden="true"></div>
 <script>
 // banners + glitch effect over the two horse-photo margins: banners laid out over the photo, then shifted photo slices, blurred blocks,
@@ -529,6 +545,74 @@ if (document.documentElement.classList.contains('andrew'))
 
   // coming back with the browser's back button: don't show the frozen cube
   addEventListener('pageshow', function (e) { if (e.persisted) location.reload(); });
+})();
+</script>
+<script>
+// "genuinely who invited you": the same kind of glitch as the NOCOM lettering (torn, shifted slices, blur, ghosting)
+// in the background's own palette, but harsher and brief, and rare: one short burst about every 30s with a random offset (+/- 12s).
+// index.html#glitch fires a burst every ~3s so it can be previewed.
+(function () {
+  var el = document.querySelector('.vision-copy');
+  if (!el) return;
+  var test = location.hash === '#glitch';
+  var EVERY = test ? 3000 : 30000, JITTER = test ? 800 : 12000;
+  var TICK = 55, TICKS_MIN = 7, TICKS_MAX = 11; // ~0.4-0.6s of rapid re-randomising
+  // the winter-forest background's mauve/grey palette (sampled from the image), the console's greyish blue
+  // (sampled from a full-page screenshot) and a near-white
+  var COLORS = ['#4b444d', '#70676f', '#7e6f7d', '#958594', '#a69ca6', '#d1ced1', '#f1edf3',
+                '#697187', '#7f8496', '#717b95'];
+  var rnd = function (a, b) { return a + Math.random() * (b - a); };
+  var pick = function (a) { return a[Math.floor(Math.random() * a.length)]; };
+  var inner = el.innerHTML;
+
+  function layer(ghost) {
+    var l = document.createElement('div'), s = l.style;
+    l.className = 'vg'; l.setAttribute('aria-hidden', 'true'); l.innerHTML = inner;
+    if (ghost) { // big blurry see-through copy, like the soft NOCOM words
+      s.transform = 'scale(' + rnd(1.06, 1.2).toFixed(2) + ') translateX(' + rnd(-10, 10).toFixed(0) + 'px)';
+      s.filter = 'blur(' + rnd(1.5, 3).toFixed(1) + 'px)'; s.opacity = rnd(.3, .5).toFixed(2); s.color = pick(COLORS);
+    } else { // a horizontal band of the text thrown sideways
+      var top = rnd(0, 90), h = rnd(4, 18);
+      s.clipPath = 'inset(' + top.toFixed(1) + '% 0 ' + Math.max(0, 100 - top - h).toFixed(1) + '% 0)';
+      s.transform = 'translateX(' + (rnd(8, 40) * (Math.random() < .5 ? -1 : 1)).toFixed(0) + 'px)';
+      s.color = pick(COLORS);
+      if (Math.random() < .25) s.filter = 'blur(' + rnd(1, 3).toFixed(1) + 'px)';
+    }
+    el.appendChild(l);
+  }
+
+  function burst(done) {
+    var n = Math.floor(rnd(TICKS_MIN, TICKS_MAX + 1)), i = 0;
+    el.classList.add('glitch');
+    var id = setInterval(function () {
+      el.querySelectorAll('.vg').forEach(function (x) { x.remove(); });
+      if (i++ >= n) { clearInterval(id); el.classList.remove('glitch'); el.style.cssText = ''; done(); return; }
+      for (var k = 1 + Math.floor(rnd(0, 3)); k > 0; k--) layer(false);
+      if (Math.random() < .15) layer(true);
+      var r = Math.random();
+      el.style.transform = 'translateX(' + rnd(-6, 6).toFixed(0) + 'px) skewX(' + rnd(-6, 6).toFixed(1) + 'deg)';
+      el.style.filter = r < .1 ? 'brightness(2.2) contrast(.6)' : r < .3 ? 'blur(' + rnd(.8, 1.6).toFixed(1) + 'px)' : '';
+    }, TICK);
+  }
+
+  function schedule(first) {
+    var delay = test ? 1000 : first ? rnd(6000, EVERY) : EVERY + rnd(-JITTER, JITTER);
+    setTimeout(function () { burst(function () { schedule(false); }); }, delay);
+  }
+  schedule(true);
+})();
+</script>
+<script>
+// secret: clicking "HORSES" in the header tagline swaps the profile picture to the last-straw meme (click again to swap back)
+(function () {
+  var link = document.getElementById('horses'), shot = document.querySelector('.shot'), img = shot && shot.querySelector('img');
+  if (!link || !img) return;
+  var PFP = img.getAttribute('src'), STRAW = 'assets/last-straw.jpg';
+  link.addEventListener('click', function (e) {
+    e.preventDefault();
+    var on = shot.classList.toggle('straw');
+    img.src = on ? STRAW : PFP;
+  });
 })();
 </script>
 <script src="scroll/files.js"></script>

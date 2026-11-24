@@ -8,7 +8,8 @@
 <style>
   html, body { margin: 0; min-height: 100%; background: #d2386b; }
 
-  /* background: three equal stretched sections, full height */
+  /* background: one image stretched over the full viewport (the rare "andrew" pull still uses three sections) */
+  .bg { position: fixed; inset: 0; width: 100vw; height: 100vh; object-fit: fill; z-index: 0; pointer-events: none; }
   .mid, .side { position: fixed; top: 0; height: 100vh; object-fit: fill; z-index: 0; pointer-events: none; }
   .side { width: 33.34%; }
   .side.left { left: 0; }
@@ -27,9 +28,9 @@
   .fx .blk, .fx .word { opacity: 0; transition: opacity .7s ease-in-out; }
   .fx .blk.tint  { backdrop-filter: blur(3px) saturate(.7) brightness(1.15); }
   /* rare smog pull: one continuous photo across left margin, main section and right margin */
-  html.rare .side, html.rare .mid { display: none; }
+  html.rare .bg, html.andrew .bg { display: none; }
   #rare { position: fixed; inset: 0; width: 100vw; height: 100vh; object-fit: fill; z-index: 0; pointer-events: none; }
-  .fx .blk.slice { background-image: url("assets/jellyfish.jpg"); filter: hue-rotate(60deg) saturate(.6) contrast(1.15) brightness(1.2); }
+  .fx .blk.slice { background-image: url("assets/winter-forest.png"); filter: hue-rotate(60deg) saturate(.6) contrast(1.15) brightness(1.2); }
   html.rare .fx .blk.slice { background-image: var(--rare-url); }
   html.andrew .fx .blk.slice { background-image: url("assets/last-straw.jpg"); }
   .fx .word { position: absolute; white-space: pre; line-height: .95; font-family: Arial, Helvetica, sans-serif;
@@ -60,9 +61,9 @@
 </head>
 <body>
 <script>
-// rare background pulls. Normally the jellyfish image fills all three sections.
+// rare background pulls. Normally the winter-forest image fills the whole background.
 // RARE_CHANCE of loads instead get one of three rare pulls (equal odds between them):
-//   - "andrew": the last-straw photo in each section (original configuration)
+//   - "andrew": the last-straw photo in each of three sections (original configuration)
 //   - one of two smog photos stretched as a single continuous image across all three sections
 (function () {
   var RARE_CHANCE = 0.001;
@@ -70,7 +71,15 @@
   var forced = /^#2696(?:\.([012]))?$/.exec(location.hash);
   if (!forced && Math.random() >= RARE_CHANCE) return;
   var pull = forced && forced[1] !== undefined ? +forced[1] : Math.floor(Math.random() * 3);
-  if (pull === 0) { document.documentElement.classList.add('andrew'); return; }
+  if (pull === 0) {
+    document.documentElement.classList.add('andrew');
+    // the original three-section layout, only used for this rare pull
+    ['side left', 'mid', 'side right'].forEach(function (c) {
+      var s = document.createElement('img'); s.className = c; s.src = 'assets/last-straw.jpg'; s.alt = '';
+      document.body.insertBefore(s, document.body.firstChild);
+    });
+    return;
+  }
   var src = pull === 1 ? 'assets/smog-beijing.jpg' : 'assets/smog-shanghai.jpg';
   document.documentElement.classList.add('rare');
   document.documentElement.style.setProperty('--rare-url', 'url("' + src + '")');
@@ -78,14 +87,7 @@
   document.body.insertBefore(i, document.body.firstChild);
 })();
 </script>
-<img class="side left" src="assets/jellyfish.jpg" alt="">
-<img class="mid" src="assets/jellyfish.jpg" alt="">
-<img class="side right" src="assets/jellyfish.jpg" alt="">
-<script>
-// "andrew" rare pull: swap the three section images to the last-straw photo before anything is painted
-if (document.documentElement.classList.contains('andrew'))
-  document.querySelectorAll('.side, .mid').forEach(function (i) { i.src = 'assets/last-straw.jpg'; });
-</script>
+<img class="bg" src="assets/winter-forest.png" alt="">
 <div class="fx" aria-hidden="true"></div>
 <div id="board"></div>
 <script>
