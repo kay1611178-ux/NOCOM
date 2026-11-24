@@ -49,13 +49,14 @@
                    box-shadow: 9px 0 #e4e4e8, 18px 0 #a9a9ae; }
   .chrome.bot { margin: 14px 0 0; }
 
-  /* top chrome doubles as an endless blinkie ticker (images inside .scroll/) */
+  /* endless news-style blinkie ticker in the grey top chrome */
   .chrome.top { height: 22px; overflow: hidden; }
-  .ticker { position: absolute; inset: 0; overflow: hidden; }
-  .ticker .track { display: flex; width: max-content; height: 100%; animation: tickerSlide linear infinite; will-change: transform; }
-  .ticker .chunk { display: flex; flex: none; height: 100%; }
+  .chrome.top::after { display: none; }
+  .ticker { position: absolute; inset: 0; overflow: hidden; font-size: 0; line-height: 0; }
+  .ticker .track { display: flex; gap: 0; width: max-content; height: 100%; animation: tickerSlide linear infinite; will-change: transform; }
+  .ticker .chunk { display: flex; flex: none; gap: 0; height: 100%; }
   .ticker img { display: block; flex: none; height: 100%; width: auto; margin: 0; padding: 0; border: 0;
-                image-rendering: pixelated; }
+                image-rendering: pixelated; vertical-align: top; }
   @keyframes tickerSlide { from { transform: translateX(0); } to { transform: translateX(-50%); } }
   @media (prefers-reduced-motion: reduce) { .ticker .track { animation: none; } }
 
@@ -510,12 +511,11 @@ if (document.documentElement.classList.contains('andrew'))
 </script>
 <script src="scroll/files.js"></script>
 <script>
-// top chrome ticker: every blinkie in scroll/ scrolls edge-to-edge on an endless loop (like the jtportal news ticker).
-// The track holds two identical chunks and slides by -50%, so the wrap point is invisible and no gaps appear.
-// scroll/files.js is regenerated whenever files change in scroll/ (see .github/workflows/manifest.yml).
+// Continuous image ticker in the grey top bar.
 (function () {
-  var SPEED = 135; // px per second
-  var FILES = window.NOCOM_SCROLL || []; // from scroll/files.js
+  var SPEED = 135; // pixels per second
+  var FALLBACK_FILES = ['antisocial.gif', 'b2d.gif', 'blinkiesCafe-30.gif', 'blinkiesCafe-dI.gif', 'blinkiesCafe-oK.gif', 'do you believe in jellyfish.gif', 'fhs.gif', 'head in the clouds.gif', 'i love ipod.gif', 'i so dont gaf.gif', 'lucky star.gif', 'missinu.gif', 'panchiko.gif', 'sensitive.gif', 'stargazer.gif'];
+  var FILES = window.NOCOM_SCROLL && window.NOCOM_SCROLL.length ? window.NOCOM_SCROLL : FALLBACK_FILES;
   var SOURCES = FILES.map(function (name) { return 'scroll/' + encodeURIComponent(name); });
   var bar = document.querySelector('.chrome.top .ticker');
   if (!bar || !SOURCES.length) return;
@@ -532,8 +532,9 @@ if (document.documentElement.classList.contains('andrew'))
     track.innerHTML = '';
     track.appendChild(seq);
 
-    // repeat the sequence until one chunk is at least as wide as the bar, then duplicate that chunk
-    var seqWidth = seq.getBoundingClientRect().width || 450;
+    // Repeat the full blinkie sequence enough times to cover the bar, then duplicate it for a seamless loop.
+    var seqWidth = seq.getBoundingClientRect().width;
+    if (!seqWidth) return;
     var copies = Math.max(1, Math.ceil(bar.clientWidth / seqWidth));
     var chunk = document.createElement('div');
     chunk.className = 'chunk';
@@ -544,7 +545,8 @@ if (document.documentElement.classList.contains('andrew'))
     track.appendChild(chunk.cloneNode(true));
 
     var chunkWidth = chunk.getBoundingClientRect().width;
-    track.style.animationDuration = Math.max(4, chunkWidth / SPEED) + 's';
+    if (!chunkWidth) return;
+    track.style.animationDuration = (chunkWidth / SPEED) + 's';
   }
 
   // preload everything first so widths are known; drop any file that fails to load
@@ -561,8 +563,11 @@ if (document.documentElement.classList.contains('andrew'))
     probe.src = src;
   });
 
-  var t;
-  addEventListener('resize', function () { clearTimeout(t); t = setTimeout(build, 250); });
+  var resizeTimer;
+  addEventListener('resize', function () {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(build, 250);
+  });
 })();
 </script>
 </body>
