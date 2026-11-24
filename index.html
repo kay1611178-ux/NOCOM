@@ -514,10 +514,8 @@ if (document.documentElement.classList.contains('andrew'))
 // The track holds two identical chunks and slides by -50%, so the wrap point is invisible and no gaps appear.
 // scroll/files.js is regenerated whenever files change in scroll/ (see .github/workflows/manifest.yml).
 (function () {
- <<<<<<< scroll-ticker-all-files
   var SPEED = 135; // px per second
-  var FILES = ['antisocial.gif', 'b2d.gif', 'blinkiesCafe-30.gif', 'blinkiesCafe-dI.gif', 'blinkiesCafe-oK.gif', 'fhs.gif', 'head in the clouds.gif', 'i love ipod.gif', 'i so dont gaf.gif', 'lucky star.gif', 'missinu.gif', 'panchiko.gif', 'sensitive.gif', 'stargazer.gif', 'assimilation.gif', 'gifted and modest.gif', 'hm.gif', 'it WONT LAST.gif', 'lwk.gif', 'omgwtf.gif', 'wish.gif', 'yah.gif'];
- >>>>>>> main
+  var FILES = window.NOCOM_SCROLL || []; // from scroll/files.js
   var SOURCES = FILES.map(function (name) { return 'scroll/' + encodeURIComponent(name); });
   var bar = document.querySelector('.chrome.top .ticker');
   if (!bar || !SOURCES.length) return;
@@ -549,11 +547,16 @@ if (document.documentElement.classList.contains('andrew'))
     track.style.animationDuration = Math.max(4, chunkWidth / SPEED) + 's';
   }
 
-  var pending = SOURCES.length;
-  function ready() { if (--pending === 0) build(); }
+  // preload everything first so widths are known; drop any file that fails to load
+  var pending = SOURCES.length, ok = {};
+  function ready() {
+    if (--pending) return;
+    SOURCES = SOURCES.filter(function (src) { return ok[src]; });
+    if (SOURCES.length) build();
+  }
   SOURCES.forEach(function (src) {
     var probe = new Image();
-    probe.onload = ready;
+    probe.onload = function () { ok[src] = true; ready(); };
     probe.onerror = ready;
     probe.src = src;
   });
