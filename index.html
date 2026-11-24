@@ -508,14 +508,17 @@ if (document.documentElement.classList.contains('andrew'))
   addEventListener('pageshow', function (e) { if (e.persisted) location.reload(); });
 })();
 </script>
+<script src="scroll/files.js"></script>
 <script>
-// top chrome ticker: blinkies from scroll/ scroll edge-to-edge on an endless loop (like the jtportal news ticker).
+// top chrome ticker: every blinkie in scroll/ scrolls edge-to-edge on an endless loop (like the jtportal news ticker).
 // The track holds two identical chunks and slides by -50%, so the wrap point is invisible and no gaps appear.
+// scroll/files.js is regenerated whenever files change in scroll/ (see .github/workflows/manifest.yml).
 (function () {
   var SPEED = 45; // px per second
-  var SOURCES = ['scroll/blinkiesCafe-30.gif', 'scroll/blinkiesCafe-dI.gif', 'scroll/blinkiesCafe-oK.gif'];
+  var FILES = window.NOCOM_SCROLL || ['blinkiesCafe-30.gif', 'blinkiesCafe-dI.gif', 'blinkiesCafe-oK.gif'];
+  var SOURCES = FILES.map(function (name) { return 'scroll/' + encodeURIComponent(name); });
   var bar = document.querySelector('.chrome.top .ticker');
-  if (!bar) return;
+  if (!bar || !SOURCES.length) return;
   var track = bar.querySelector('.track');
 
   function build() {
