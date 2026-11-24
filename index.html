@@ -123,8 +123,7 @@
     font-weight: 300; line-height: .88; letter-spacing: .035em; text-align: center;
   }
   .vision-copy span { display: block; white-space: nowrap; transform: scaleX(1.18); }
-  /* rare harsh glitch burst (see the vision-copy script): the text is allowed to tear outside its box while it runs */
-  .vision-copy.glitch { overflow: visible; }
+  /* rare glitch burst (see the vision-copy script); the tearing stays inside the text box */
   .vision-copy .vg { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center;
                      justify-content: center; pointer-events: none; }
   .arrow { float: left; width: 16px; height: 16px; margin: 2px 8px 0 0; border-radius: 50%; border: 2px solid #eef; position: relative; }
@@ -539,14 +538,14 @@
 </script>
 <script>
 // "genuinely who invited you": the same kind of glitch as the NOCOM lettering (torn, shifted slices, blur, ghosting)
-// in the background's own palette, but harsher, and rare: one short burst about every 30s with a random offset (+/- 12s).
+// in the background's own palette, but harsher and brief, and rare: one short burst about every 30s with a random offset (+/- 12s).
 // index.html#glitch fires a burst every ~3s so it can be previewed.
 (function () {
   var el = document.querySelector('.vision-copy');
   if (!el) return;
   var test = location.hash === '#glitch';
   var EVERY = test ? 3000 : 30000, JITTER = test ? 800 : 12000;
-  var TICK = 60, TICKS_MIN = 16, TICKS_MAX = 26; // ~1-1.5s of rapid re-randomising
+  var TICK = 55, TICKS_MIN = 7, TICKS_MAX = 11; // ~0.4-0.6s of rapid re-randomising
   // the winter-forest background's mauve/grey palette (sampled from the image), the console's greyish blue
   // (sampled from a full-page screenshot) and a near-white
   var COLORS = ['#4b444d', '#70676f', '#7e6f7d', '#958594', '#a69ca6', '#d1ced1', '#f1edf3',
@@ -559,12 +558,12 @@
     var l = document.createElement('div'), s = l.style;
     l.className = 'vg'; l.setAttribute('aria-hidden', 'true'); l.innerHTML = inner;
     if (ghost) { // big blurry see-through copy, like the soft NOCOM words
-      s.transform = 'scale(' + rnd(1.25, 1.7).toFixed(2) + ') translateX(' + rnd(-30, 30).toFixed(0) + 'px)';
-      s.filter = 'blur(' + rnd(2, 4).toFixed(1) + 'px)'; s.opacity = rnd(.35, .65).toFixed(2); s.color = pick(COLORS);
+      s.transform = 'scale(' + rnd(1.06, 1.2).toFixed(2) + ') translateX(' + rnd(-10, 10).toFixed(0) + 'px)';
+      s.filter = 'blur(' + rnd(1.5, 3).toFixed(1) + 'px)'; s.opacity = rnd(.3, .5).toFixed(2); s.color = pick(COLORS);
     } else { // a horizontal band of the text thrown sideways
-      var top = rnd(0, 88), h = rnd(6, 38);
+      var top = rnd(0, 90), h = rnd(4, 18);
       s.clipPath = 'inset(' + top.toFixed(1) + '% 0 ' + Math.max(0, 100 - top - h).toFixed(1) + '% 0)';
-      s.transform = 'translateX(' + (rnd(18, 90) * (Math.random() < .5 ? -1 : 1)).toFixed(0) + 'px)';
+      s.transform = 'translateX(' + (rnd(8, 40) * (Math.random() < .5 ? -1 : 1)).toFixed(0) + 'px)';
       s.color = pick(COLORS);
       if (Math.random() < .25) s.filter = 'blur(' + rnd(1, 3).toFixed(1) + 'px)';
     }
@@ -577,11 +576,11 @@
     var id = setInterval(function () {
       el.querySelectorAll('.vg').forEach(function (x) { x.remove(); });
       if (i++ >= n) { clearInterval(id); el.classList.remove('glitch'); el.style.cssText = ''; done(); return; }
-      for (var k = 2 + Math.floor(rnd(0, 5)); k > 0; k--) layer(false);
-      if (Math.random() < .3) layer(true);
+      for (var k = 1 + Math.floor(rnd(0, 3)); k > 0; k--) layer(false);
+      if (Math.random() < .15) layer(true);
       var r = Math.random();
-      el.style.transform = 'translateX(' + rnd(-14, 14).toFixed(0) + 'px) skewX(' + rnd(-12, 12).toFixed(1) + 'deg)';
-      el.style.filter = r < .15 ? 'brightness(2.2) contrast(.6)' : r < .4 ? 'blur(' + rnd(1, 2.2).toFixed(1) + 'px)' : '';
+      el.style.transform = 'translateX(' + rnd(-6, 6).toFixed(0) + 'px) skewX(' + rnd(-6, 6).toFixed(1) + 'deg)';
+      el.style.filter = r < .1 ? 'brightness(2.2) contrast(.6)' : r < .3 ? 'blur(' + rnd(.8, 1.6).toFixed(1) + 'px)' : '';
     }, TICK);
   }
 
