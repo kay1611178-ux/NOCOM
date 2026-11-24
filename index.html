@@ -99,6 +99,9 @@
   .vision .wb { display: grid; grid-template-columns: 200px 1px 1fr; gap: 16px; align-items: start; }
   .shot { position: relative; border: 1px solid #25252b; background: #fff; }
   .shot img { display: block; width: 100%; height: 230px; object-fit: cover; object-position: 30% 42%; filter: saturate(.9) contrast(1.05); }
+  .shot.straw img { object-position: 50% 100%; }
+  /* hidden toggle in the header tagline: must look exactly like the surrounding text */
+  .hd small a, .hd small a:hover, .hd small a:focus { text-decoration: none; cursor: auto; outline: none; -webkit-tap-highlight-color: transparent; }
   .shot::after { content: ''; position: absolute; inset: 0; pointer-events: none; background: repeating-linear-gradient(0deg, rgba(0,0,0,.14) 0 1px, transparent 1px 3px); }
   .divider { width: 1px; align-self: stretch; background: rgba(255,255,255,.5); }
   .headline { text-align: right; font: 17px/1.1 "Trebuchet MS", Verdana, sans-serif; letter-spacing: .04em; text-transform: none; color: #fff; margin: 0 0 10px; }
@@ -266,7 +269,7 @@
   <header class="hd">
     <img class="emblem" src="assets/star.png" alt="NOCOM star logo">
     <span class="vr"></span>
-    <div><b>NOCOM</b><small>HORSES THROUGH TECHNOLOGY</small></div>
+    <div><b>NOCOM</b><small><a href="#" id="horses">HORSES</a> THROUGH TECHNOLOGY</small></div>
   </header>
 
   <nav class="strip">
@@ -589,6 +592,19 @@
     setTimeout(function () { burst(function () { schedule(false); }); }, delay);
   }
   schedule(true);
+})();
+</script>
+<script>
+// secret: clicking "HORSES" in the header tagline swaps the profile picture to the last-straw meme (click again to swap back)
+(function () {
+  var link = document.getElementById('horses'), shot = document.querySelector('.shot'), img = shot && shot.querySelector('img');
+  if (!link || !img) return;
+  var PFP = img.getAttribute('src'), STRAW = 'assets/last-straw.jpg';
+  link.addEventListener('click', function (e) {
+    e.preventDefault();
+    var on = shot.classList.toggle('straw');
+    img.src = on ? STRAW : PFP;
+  });
 })();
 </script>
 <script src="scroll/files.js"></script>
